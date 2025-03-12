@@ -32,7 +32,7 @@ l = range(0,λ,101)
 # Normalized Impedance
 z = [(Zl+(Zo*tanh(s*li)))/(Zo+(Zl*tanh(s*li))) for li in l]
 # Draw lines on the Smith Chart
-smithplot!(ax, z, reflection = false, color = 1:101)
+smithplot!(ax, z, reflection = false, color = 1:101, freq = 3.0e9 * ones(length(z)))
 # Scatter points on the origin and end points
 smithscatter!(ax, [z[1]], markersize = 12.0)
 smithscatter!(ax, [z[end]], markersize = 12.0, marker = :cross)

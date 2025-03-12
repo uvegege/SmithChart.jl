@@ -3,7 +3,6 @@ module SmithChart
 using Makie
 using Makie: parent_scene, shift_project, update_tooltip_alignment!, position2string
 using Makie.GeometryBasics: Polygon
-#using Makie.Colors
 using Printf
 
 include("./Functions.jl")
@@ -22,3 +21,5 @@ export SmithScatter, smithscatter, smithscatter!
 export vswr, vswr!
 
 end
+
+1+1

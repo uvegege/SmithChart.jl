@@ -1,4 +1,9 @@
 # Split each interval in n values
+"""
+    splitintervals(intervals, n)
+
+Split each interval in n values. `intervals` is a Vectir of intervals.
+"""
 function splitintervals(intervals, n)
     return map(intervals) do interval
         d = interval.right - interval.left
@@ -7,13 +12,22 @@ function splitintervals(intervals, n)
     end
 end
 
-#Create new intervals from the previous splited intervals using left, midpoint and right
+"""
+    splitintervals(intervals, n)
+
+Create new intervals from the previous splited intervals using left, midpoint and right
+"""
 function newintervals(splited_intervals, intervals)
     return reduce(vcat, map(splited_intervals, intervals) do splited, interval
         Vec2(interval.left..splited[2], splited[2]..interval.right)
     end)    
 end
 
+"""
+    get_zcut(z, zoomlevel)
+
+Returns the reactance or resistance value of the arc of the cut depending of the resistance or reactance value `z`
+"""
 function get_zcut(z, zoomlevel)
     if zoomlevel == 1 || zoomlevel == 0
         zcut = abs(z) in 0.0..0.999 ? 0.6 :

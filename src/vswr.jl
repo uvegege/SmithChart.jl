@@ -1,5 +1,3 @@
-
-
 function vswr!(ax::Axis, v; args...)
     Γ = (v - 1) / (v + 1)
     points = [Γ * cis(t) for t in range(-pi, pi, 251)]

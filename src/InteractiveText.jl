@@ -1,4 +1,10 @@
+"""
+    move_textlabels(limits, zoomlevel, rtext, itext, vrtext, vitext, updatext, nvals)
 
+Calculates and updates the positions of text labels on the Smith Chart based on the current view limits and zoom level.
+
+This function calculates the new positions for resistance and reactance text labels on the Smith Chart when the `updatext` flag is `true`. It uses the current view limits (`limits`), zoom level (`zoomlevel`), and the number of desired values (`nvals`) to determine the appropriate positions.
+"""
 function move_textlabels(limits, zoomlevel, rtext, itext, vrtext, vitext, updatext ,nvals)
     !updatext && return
     empty!(rtext)

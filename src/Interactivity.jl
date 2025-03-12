@@ -1,5 +1,19 @@
-#Are rightdragstart, rightdragstop, etc better options?
-# Can I make it with "on(...) do event ...
+"""
+    interactivity_smithchart(ax)
+
+Configures interactive behavior for a Smith Chart plot. This function sets up interactions for the Smith Chart displayed in the given `Axis` (`ax`). It registers an interaction that limits camera movement within the Smith Chart's boundaries and attaches a scroll event handler to update the chart's view and associated observables.
+
+- `ax` is the `Axis` object containing the Smith Chart plot.
+
+# Notes
+
+- **Camera Boundary Limitation:**
+    - The function registers an interaction that restricts camera movement to the Smith Chart's visible area. This prevents users from draging or zooming outside the chart's boundaries.
+- **Scroll Event Handling:**
+    - A scroll event handler is attached to the `Axis` to perform the following actions:
+        1.  **Boundary Enforcement:** Ensures that the camera remains within the Smith Chart's limits during zooming.
+        2.  **Observable Updates:** Updates the current and previous view limits of the Smith Chart's observables. This allows other parts of the application to react to changes in the chart's view.
+"""
 function interactivity_smithchart(ax)
     deregister_interaction!(ax, :rectanglezoom)
     register_interaction!(ax, :custominteraction) do event::MouseEvent, axis

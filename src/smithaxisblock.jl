@@ -1,5 +1,3 @@
-Makie.interactions(sc::SmithAxis) = sc.interactions
-
 function Makie.initialize_block!(sc::SmithAxis; palette=nothing)
 
     setfield!(sc, :temp_plots, Observable(Tuple{Makie.Plot, String}[]) )

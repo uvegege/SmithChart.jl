@@ -1,15 +1,3 @@
-#cd("C://Users//Víctor//Documents//MiProyecto//Upload//SmithChart/src")
-# 
-# using Makie
-# using Makie: parent_scene, shift_project, update_tooltip_alignment!, position2string
-# using Makie: DragPan, ScrollZoom, LimitReset
-# using Makie.GeometryBasics: Polygon
-# using Makie.GeometryBasics: LineString
-# using Printf
-# using Makie: inherit, automatic
-#using GLMakie
-
-
 Makie.@Block SmithAxis <: Makie.AbstractAxis begin
 
 scene::Scene
@@ -365,11 +353,3 @@ temp_plots::Observable{Vector{Tuple{Makie.Plot, String}}}
 end
 
 end
-
-#include("./InteractiveZoom.jl")
-#include("./cutgrid.jl")
-#include("./Functions.jl")
-#include("./InteractiveText.jl")
-#include("./drawaxis.jl")
-#include("./blockinteractivity.jl")
-#include("./SmithChartBlockF.jl")

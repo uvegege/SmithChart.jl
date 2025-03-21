@@ -1,7 +1,3 @@
-#TODO: MUY IMPORTANTE: PARA QUE CALCULO INTERSECCIONES CUANDO PUEDO SABER LOS VALORES CON COORDS_TO_Z DIRECTAMENTE?
-#TODO: AL FINAL LOS ARCOS SON CONSTANTES, NO ES TAN COMPLEJO
-
-
 function draw_axis!(sc::SmithAxis)
 
     clipcolor = map(sc.blockscene, sc.clipcolor, sc.backgroundcolor) do cc, bgc

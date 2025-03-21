@@ -1,16 +1,22 @@
+#TODO: This should be simpler
 """
-    move_textlabels(limits, zoomlevel, rtext, itext, vrtext, vitext, updatext, nvals)
+    move_textlabels(r_label_pos, x_label_pos, limits, zoomlevel, zupdate, subgrid, updatext, nvals, smtype, rvals, xvals, rcuts, xcuts)
 
 Calculates and updates the positions of text labels on the Smith Chart based on the current view limits and zoom level.
 
 This function calculates the new positions for resistance and reactance text labels on the Smith Chart when the `updatext` flag is `true`. It uses the current view limits (`limits`), zoom level (`zoomlevel`), and the number of desired values (`nvals`) to determine the appropriate positions.
 """
-function move_textlabels(limits, zoomlevel, rtext, itext, vrtext, vitext, updatext ,nvals)
-    !updatext && return
-    empty!(rtext)
-    empty!(itext)
-    empty!(vrtext)
-    empty!(vitext)
+function calculate_textposition(r_label_pos, x_label_pos, limits, zoomlevel, zupdate, subgrid, updatext, nvals, smtype, rvals, xvals, rcuts, xcuts)
+
+    if !updatext | !zupdate 
+        x_label_pos[] = [("", Point2f(NaN)) for _ in 1:nvals]
+        r_label_pos[] = [("", Point2f(NaN)) for _ in 1:2*nvals]
+        return
+    end
+
+    empty!(x_label_pos[])
+    empty!(r_label_pos[])
+
     ox, oy = limits.origin
     wx, wy = limits.widths
     xc, yc = ox+wx/2, oy+wy/2 # Center points
@@ -18,91 +24,106 @@ function move_textlabels(limits, zoomlevel, rtext, itext, vrtext, vitext, update
     zl = coords_to_z(center...)
     rc = real(zl)
     ic = imag(zl)
-    if zoomlevel == 0
-        intervals = [0..0.2, 0.2..0.4, 0.4..0.6, 0.6..1.0, 1.0..2.0, 2.0..5.0, 5.0..20.0]
-        values = map(x->x.right, intervals)
-    elseif zoomlevel == 1
-        intervals = [0..0.2, 0.2..0.4, 0.4..0.6, 0.6..1.0, 1.0..2.0, 2.0..5.0, 5.0..10.0, 10.0..20.0, 20.0..80]
-        values = map(x->x.right, intervals)
-    else #elseif zoomlevel > 2
-        split_intervals = 3
-        intervals = [0..0.2, 0.2..0.4, 0.4..0.6, 0.6..1.0, 1.0..2.0, 2.0..5.0, 5.0..10.0, 10.0..20.0, 20.0..80]
+    
+    if zoomlevel == 1 && subgrid == true
+        intervals1 = createintervals(rvals)
+        intervals2 = createintervals(xvals)
+        rvalues = map(x->x.right, intervals1)
+        ivalues = map(x->x.right, intervals2)
+    elseif zoomlevel > 2 && subgrid == true
+        split_intervals = 3 # TODO: pass to the function
+        intervals = createintervals(rvals)
         splited_intervals = splitintervals(intervals, split_intervals)
         new_intervals = newintervals(splited_intervals, intervals)
-        values = map(x->x.right, new_intervals)
+        rvalues = map(x->x.right, new_intervals)
+
+        intervals2 = createintervals(xvals)
+        splited_intervals2 = splitintervals(intervals2, split_intervals)
+        new_intervals2 = newintervals(splited_intervals2, intervals2)
+        ivalues = map(x->x.right, new_intervals2)
+    else
+        rvalues = copy(rvals)
+        ivalues = copy(xvals)
     end
 
     # Find the closest REACTANCE/RESISTANCE curve to the center of the image
-
-    crc = argmin(v->abs(v - rc), values)
-    cic = argmin(v->abs(v - ic), vcat(values, -values))
+    sgn = smtype == :Z ? 1.0 : -1.0
+    crc = argmin(v->abs(v - rc), rvalues)
+    cic = argmin(v->abs(v - ic), vcat(ivalues, -ivalues))
     cic = abs(ic) < 0.2 ? 0.0 : cic
+    
+    if sgn == -1.0
+        crc = 1/crc
+    end
 
     #Resistance
-    ref_center, ref_rad = reactance_arcs(cic)
     prev = Point2f(Inf)
     if cic == 0.0
         minR = max(0.0, real(coords_to_z(max(-1.0, ox), 0.0)))
         maxR = min(Inf, real(coords_to_z(min(0.999999, ox+wx), 0.0)))
+        if sgn == -1.0
+            minR, maxR = 1/maxR, 1/minR
+        end
     else
         minR, maxR =  0.0, Inf
     end
-    valr = filter(v -> (minR <= v <= maxR) &  (abs(v) <= get_zcut(v, zoomlevel)) , values)
+    valr = filter(v -> (minR <= v <= maxR) &  (abs(v) <= get_zcut(v, rvals, rcuts)) , rvalues)
     lenv = length(valr)
     indices = lenv >= nvals ? round.(Int, range(1, lenv, nvals)) : eachindex(valr)
 
     for i in indices
         v = valr[i]
         if cic == 0.0
-            push!(rtext, Point2f(R_to_u(v), 0.0))
-            push!(vrtext, v)
+            push!(r_label_pos[], (textval(v), Point2f(sgn * R_to_u(v), 0.0)))
         else
-            center, rad = resistance_arcs(v)
-            pr1, pr2 = circles_intersection(ref_center, center, ref_rad, rad)
-            pr = cic < 0 ? pr1 : pr2
+            pr = smith_transform(Complex(v, cic))
             if sqrt(sum(abs2, pr - prev)) > 0.07
-                push!(rtext, pr)
-                push!(vrtext, v)
+                push!(r_label_pos[], (textval(v), Point2f(sgn * pr[1], pr[2])))
                 prev = pr
             else
-                push!(rtext, Point2f(Inf))
-                push!(vrtext, Inf)
+                push!(r_label_pos[], ("", Point2f(Inf)))
             end
         end
     end
-    for v in 1:(nvals - length(rtext))
-        push!(rtext, Point2f(Inf))
-        push!(vrtext, Inf)
+
+    # FILL with INF
+    for _ in 1:(nvals - length(r_label_pos[]))
+        push!(r_label_pos[], ("", Point2f(Inf)))
     end
 
     #Reactance
-    ref_center, ref_rad = resistance_arcs(crc)
     prev = Point2f(Inf)
-    filter!(x-> abs(x) <= get_zcut(crc, zoomlevel), values)
-    lenv = length(values)
-    indices = lenv >= nvals ? round.(Int, range(1, lenv, nvals)) : eachindex(values)
+    filter!(x-> abs(x) <= get_zcut(crc, xvals, xcuts), ivalues)
+    lenv = length(ivalues)
+    indices = lenv >= nvals ? round.(Int, range(1, lenv, nvals)) : eachindex(ivalues)
     
     for i in indices
-        v = values[i]
+        v = ivalues[i]
         val = cic < 0 ? -v : v
-        center, rad = reactance_arcs(val)
-        px1, px2 = circles_intersection(ref_center, center, ref_rad, rad)
-        px = val < 0 ? px2 : px1
-        # Don't push too close positions, positions on rtext and positions to close to x = 0 line.
-        if sqrt(sum(abs2, px - prev)) > 0.07 && all(x->sqrt(sum(abs2, px - x)) > 0.05, rtext) && abs(px[2]) > 0.045
-            push!(itext, px)
-            push!(vitext, val)
+        px = smith_transform(Complex(crc, val))
+        px = Point2f(sgn*px[1], px[2])
+
+        if sqrt(sum(abs2, px - prev)) > 0.07 && all(x->sqrt(sum(abs2, px - x)) > 0.05, getindex.(r_label_pos[], 2)) && abs(px[2]) > 0.045
+            push!(x_label_pos[], (textval(sgn * val, true), px))
             prev = px
         else
-            push!(itext, Point2f(Inf))
-            push!(vitext, Inf)
+            push!(x_label_pos[], ("", Point2f(Inf)))
         end
     end
-    for v in 1:(nvals - length(itext))
-        push!(itext, Point2f(Inf))
-        push!(vitext, Inf)
+    # FILL with INF
+    for _ in 1:(nvals - length(x_label_pos[]))
+        push!(x_label_pos[], ("", Point2f(Inf)))
+    end
+
+    for i in eachindex(x_label_pos[])
+        pos = x_label_pos[][i][2]
+        txt = x_label_pos[][i][1]
+        txt = startswith("-", txt) ? txt[2:end] : "-"*txt
+        pos = Point2f(pos[1], -pos[2])
+        push!(x_label_pos[], (txt, pos))
     end
 
     return nothing
 end
+
 

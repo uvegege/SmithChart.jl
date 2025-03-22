@@ -5,6 +5,8 @@ This project originated as an exploration of the interactive possibilities that 
 
 **Note**: Some of the features are experimental. They might not function fully as expected or could be subject to changes in future versions. 
 
+**Note**: It is possible that currently there are too many keywords. Options are being considered to simplify some aspects.
+
 **Note**: Certain visual details of the Smith Chart may require further refinement to enhance aesthetic and overall visual quality.
 
 ## Usage
@@ -37,9 +39,60 @@ DataInspector(fig)
 fig
 ```
 
+## Integration with Makie Utilities
+
+This example showcases the seamless integration of the Smith chart with Makie.jl's interactive functionalities. It demonstrates a typical scenario used to teach impedance matching, where we aim to transform a source impedance of 1+2j to a load impedance of 1. To achieve this, we utilize a transmission line and a parallel stub, and control their lengths via sliders. By dynamically adjusting these lengths, users can observe how the source impedance seen by the load evolves on the Smith chart, visually illustrating the impedance matching process.
+
+```julia
+
+fig = Figure()
+ax = SmithAxis(fig[1, 1], title = "Stub Matching")
+
+Ri = 1.0
+Xi = 2.0
+zi = Ri + Xi*im
+
+function simline(z, l)
+    bl = 2 * pi * l # Electrical length
+    return (z + im * tan(bl)) / (1 + im * z * tan(bl))
+end
+
+function simstub(z, l)
+    bl = 2 * pi * l
+    y_stub = im * tan(-bl)
+    return 1 / ((1 / z) + y_stub) 
+end
+
+N = 101
+sg = SliderGrid(
+    fig[2, 1],
+    (label = "Line", range = range(0.0, 0.5, 151), format = "{:.3f}λ", startvalue = 0.0),
+    (label = "Stub", range = range(0.0, 0.5, 151), format = "{:.3f}λ", startvalue = 0.0))
+
+sliderobservables = [s.value for s in sg.sliders]
+z = lift(sliderobservables...) do slvalues...
+    line_index, stub_index = [slvalues...]
+    line_p = range(0.0, line_index, N)
+    stub_p = range(0.0, stub_index, N)
+    z_line = simline.(zi, line_p)
+    z_stub = simstub.(z_line[end], stub_p)
+    return [zi; z_line; z_stub]
+end
+
+zend = lift(x->x[end], z)
+smithscatter!(zi)
+smithplot!(z)
+smithscatter!(zend)
+fig
+```
+
+
+## Plot Reflection Coefficientes
+
 ![SmithChartExample](Images/smithplot_color.png)
 
-You can also draw reflection coefficients (S-parameters) with the `reflection = true` keyword. 
+You can also draw reflection data with the `reflection = true` keyword. This is useful, for example, when you want to visualize the S-parameters of a simulation or measurement.
+
 ```julia
 zi = 3.8 - 1.9im
 function simline(z, l)
@@ -80,12 +133,28 @@ ax = SmithAxis(fig[1, 1]; subgrid = true, cutgrid = true, zoomupdate = true, tex
 
 ## Other Keywords
 
-In the folder Images there are examples of some keywords.
+How some keywords modify visual aspects of the Smith Chart.
+
+### Chart type and grid colors
+
+It is possible to change the type of smith chart or modify the color of the grid or subgrid.
 
 ![keywordexample](Images/typeandcolor.png)
 
+### Interior tick options
+
+There are multiple keywords to modify the position of the ticks. Some of them are:
+
 ![keywordexample](Images/tickkeywords.png)
 
+### Threshold keyword
+
+`threshold` keyword controls the cut of the lines in the intersection with other arcs.
+
 ![keywordexample](Images/threshold.png)
+
+### Subgrid split
+
+The `splitminor` keyword controls the number of cuts of a space between ticks when there is no zoom. See also `splitgrid` to control the split when zooming.
 
 ![keywordexample](Images/splitminor.png)

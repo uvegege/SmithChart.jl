@@ -226,15 +226,24 @@ end
 #TODO: Dragg markers
 #TODO: Associate markers to a specific plot.
 #TODO: save marker's DATA
-function datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100, kwargs...)
+"""
+    datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100; fontsize = 10.0, title = true, kwargs...)
+
+Allows creating data markers with DOUBLE CLICK on the lines or scatter plots.
+
+- ax::SmithAxis is the `SmithAxis`.
+- gp::GridPosition is a GridPosition. Example: fig[1,2]
+
+"""
+function datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100; fontsize = 10.0, title = true, kwargs...)
     
     rowpos = gp.span.rows[end]
     colpos = gp.span.cols[end]
     lbl_txt = Observable("")
     gl = GridLayout(gp, tellwidth = false, aspect = 1, tellheight = false, halign = :center, valign = :center, protrusions = (0,0,0,0))
-    Label(gl[0, 1], "Data Markers")
+    Label(gl[0, 1], "Data Markers", fontize = fontsize)
     Box(gl[1, 1], color = ax.scene.backgroundcolor, strokecolor = :black, strokewidth = 1)
-    lbl = Label(gl[1, 1], lbl_txt, rotation = 0, padding = (10, 10, 10, 10))
+    lbl = Label(gl[1, 1], lbl_txt, rotation = 0, padding = (10, 10, 10, 10), fontize = fontsize)
     #colsize!(ax.parent.layout, colpos, Aspect(1, 0.5))
     #rowgap!(gl, 0)
 

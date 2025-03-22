@@ -3,23 +3,17 @@
 A Julia library for creating interactive Smith charts using Makie.jl.
 This project originated as an exploration of the interactive possibilities that Makie.jl offers.
 
-**Note**: Perhaps it would make more sense to create a custom `Block` rather than drawing directly on an `Axis` to allow for better layout control. Some features of the Makie.jl library are still being explored.
+**Note**: Some of the features are experimental. They might not function fully as expected or could be subject to changes in future versions. 
 
 **Note**: Certain visual details of the Smith Chart may require further refinement to enhance aesthetic and overall visual quality.
-
-## Missing Features
-
-* Admittance Smith Chart
-* ZY Smith Chart
 
 ## Usage
 
 ```julia
 using SmithChart
-using GLMakie # Selected Backend 
+using GLMakie # Select Backend 
 fig = Figure()
-ax = Axis(fig[1, 1]; aspect=1, limits=(-1.2, 1.2, -1.2, 1.2), title = "Variable Length Lossy Transmission Line")
-drawsmithchart!(ax, subgrid = true, cutgrid = true, zoomupdate = false)
+ax = SmithAxis(fig[1, 1]; cutgrid = true, subgrid = true, title = "Variable Length Lossy Transmission Line")
 # Lossy transmission line
 Zo = 50
 Zl = 100 + 50im
@@ -43,18 +37,35 @@ DataInspector(fig)
 fig
 ```
 
-![SmithChartExample](Images/SmithChart_color.png)
+![SmithChartExample](Images/smithplot_color.png)
 
-You can also draw reflection coefficients (S-parameters) with the `reflection = true` keyword. If you have a two vectors of complex numbers `s11` and `s22` you can plot it without transforming the data.
-
+You can also draw reflection coefficients (S-parameters) with the `reflection = true` keyword. 
 ```julia
-smithplot!(ax, s11, reflection = true, label = "S11")
-smithplot!(ax, s22, reflection = true, label = "S22")
-fig[1, 2] = Legend(fig, ax, framevisible = false)
+zi = 3.8 - 1.9im
+function simline(z, l)
+    bl = 2 * pi * l 
+    return (z + im * tan(bl)) / (1 + im * z * tan(bl))
+end
+l = range(0.0, 0.22, 101) 
+z = simline.(zi, l)
+fig = Figure(size = (900,600))
+ax = SmithAxis(fig[1,1])
+smithplot!(ax, z, label = "Impedance")
+# Convert impedance z to reflection
+Γ = @. (z-1)/(z+1)
+# Plot with `reflection = true`
+smithscatter!(ax, Γ[1:5:end], reflection = true, markersize = 11, color = :orange, marker = :cross, label = "Reflection\nreflection = true")
+fig[1,2] = Legend(fig, ax)
 fig
 ```
-![ReflectionExample](Images/SmithChart_reflection.png)
+![ReflectionExample](Images/Reflectionkeyword.png)
 
+
+## Interactive Data Markers
+
+Interactive data markers can be added to your Smith chart using the `datamarkers(sc::SmithAxis, gp::GridPosition)` function. Double-click on lines or scatter plots to place a marker. To remove a marker, double-click on it. Future enhancements may include marker dragging and real-time information updates.
+
+![datamarkergif](Images/datamarkers.gif)
 
 ## Dynamic Annotation Update
 
@@ -62,14 +73,19 @@ You can activate a experimental dynamic curve annotation with the keyword `textu
 
 ```julia
 fig = Figure(size = (800,600))
-ax = Axis(fig[1, 1]; aspect=1, limits=(-1.2, 1.2, -1.2, 1.2))
-drawsmithchart!(ax, subgrid = true, cutgrid = true, zoomupdate = true, textupdate = true)
+ax = SmithAxis(fig[1, 1]; subgrid = true, cutgrid = true, zoomupdate = true, textupdate = true, threshold = (150, 150))
 ```
 
 ![ZoomGif](Images/SmithChart_zoom.gif)
 
 ## Other Keywords
 
-Here are some of the available grid options. For more details on keywords, use `? smithchart`
+In the folder Images there are examples of some keywords.
 
-![Descripción del GIF](Images/Someoptions.png)
+![keywordexample](Images/typeandcolor.png)
+
+![keywordexample](Images/tickkeywords.png)
+
+![keywordexample](Images/threshold.png)
+
+![keywordexample](Images/splitminor.png)

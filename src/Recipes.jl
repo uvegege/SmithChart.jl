@@ -11,7 +11,7 @@ Plot lines on the Smith Chart.
 - `line_width = 2.8` sets the width of the line in pixel units.
 - `label = nothing`
 - `reflection = false`: Specifies whether it is a normalized impedance or a reflection coefficient.
-- `freq = Float64[]` Array of frequencies associated with each represented value. Mainly used to represent the data with the `DataInspector`.
+- `freq = Float64[]` Array of frequencies associated with each represented value. Mainly used by `DataInspector`.
 """
 @recipe(SmithPlot, z) do scene
     Attributes(
@@ -41,7 +41,7 @@ Scatter points on the Smith Chart.
 - `markersize = 9` sets the size of the marker.
 - `label = nothing`
 - `reflection = false`: Specifies whether it is a normalized impedance or a reflection coefficient.
-- `freq = Float64[]` Array of frequencies associated with each represented value. Mainly used to represent the data with the `DataInspector`.
+- `freq = Float64[]` Array of frequencies associated with each represented value. Mainly used Mainly used by `DataInspector`.
 """
 @recipe(SmithScatter, z) do scene
     Attributes(

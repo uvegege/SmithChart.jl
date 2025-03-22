@@ -345,8 +345,8 @@ function draw_axis!(sc::SmithAxis)
         visible = @lift( $(sc.textupdate) & $(sc.tickbox)), inspectable = false
     )
 
-    translate!.((rlabelplot, xlabelplot), 0, 0, -2)
-    translate!.((rlabelsct, xlabelsct), 0, 0, -1)
+    translate!.((rlabelplot, xlabelplot), 0, 0, -1)
+    translate!.((rlabelsct, xlabelsct), 0, 0, -2)
 
     # PLOT SPINE
 

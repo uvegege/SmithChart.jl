@@ -41,16 +41,18 @@ fig
 
 ## Integration with Makie Utilities
 
-This example showcases the seamless integration of the Smith chart with Makie.jl's interactive functionalities. It demonstrates a typical scenario used to teach impedance matching, where we aim to transform a source impedance of 1+2j to a load impedance of 1. To achieve this, we utilize a transmission line and a parallel stub, and control their lengths via sliders. By dynamically adjusting these lengths, users can observe how the source impedance seen by the load evolves on the Smith chart, visually illustrating the impedance matching process.
+This example showcases the seamless integration of the Smith chart with Makie.jl's interactive functionalities. It demonstrates a typical scenario used to teach impedance matching, where we aim to transform a source impedance of 50+100j $\Omega$ to a load impedance of 50 $\Omega$. To achieve this, we utilize a transmission line and a parallel stub, and control their lengths via sliders. By dynamically adjusting these lengths, users can observe how the source impedance seen by the load evolves on the Smith chart, visually illustrating the impedance matching process.
 
 ```julia
 
 fig = Figure()
 ax = SmithAxis(fig[1, 1], title = "Stub Matching")
 
-Ri = 1.0
-Xi = 2.0
+Zl = 50.0
+Ri = 50.0
+Xi = 100.0
 zi = Ri + Xi*im
+zi = zi / Zl
 
 function simline(z, l)
     bl = 2 * pi * l # Electrical length

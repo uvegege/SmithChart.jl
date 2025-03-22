@@ -86,6 +86,7 @@ smithscatter!(zend)
 fig
 ```
 
+![slidergif](Images/sliders.gif)
 
 ## Plot Reflection Coefficientes
 

@@ -33,11 +33,14 @@ smithplot!(ax, z, reflection = false, color = 1:101, freq = 3.0e9 * ones(length(
 smithscatter!(ax, [z[1]], markersize = 12.0)
 smithscatter!(ax, [z[end]], markersize = 12.0, marker = :cross)
 # Colorbar representing the length of the line
-Colorbar(fig[1,2], limits = (l[1]/λ, l[end]/λ), ticks = ([0.0, 0.5, 1.0], ["0.0λ", "0.5λ", "1.0λ"]))
+Colorbar(fig[1,2], limits = (l[1]/λ, l[end]/λ), ticks = ([0.0, 0.5, 1.0], ["0.0", "λ/2", "λ"]))
 # Activate Data Inspector
 DataInspector(fig)
 fig
 ```
+
+![SmithChartExample](Images/smithplot_color.png)
+
 
 ## Integration with Makie Utilities
 
@@ -91,8 +94,6 @@ fig
 ![slidergif](Images/sliders.gif)
 
 ## Plot Reflection Coefficientes
-
-![SmithChartExample](Images/smithplot_color.png)
 
 You can also draw reflection data with the `reflection = true` keyword. This is useful, for example, when you want to visualize the S-parameters of a simulation or measurement.
 

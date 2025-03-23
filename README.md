@@ -1,13 +1,13 @@
 # SmithChart
 
 A Julia library for creating interactive Smith charts using Makie.jl.
-This project originated as an exploration of the interactive possibilities that Makie.jl offers.
+This project originated as an exploration of the interactive possibilities that Makie offers.
+
+**Note**: Certain visual details of the Smith Chart may require further refinement to enhance aesthetic and overall visual quality.
 
 **Note**: Some of the features are experimental. They might not function fully as expected or could be subject to changes in future versions. 
 
 **Note**: It is possible that currently there are too many keywords. Options are being considered to simplify some aspects.
-
-**Note**: Certain visual details of the Smith Chart may require further refinement to enhance aesthetic and overall visual quality.
 
 ## Usage
 
@@ -42,7 +42,7 @@ fig
 ![SmithChartExample](Images/smithplot_color.png)
 
 
-## Integration with Makie Utilities
+## Integration with Makie
 
 This example showcases the seamless integration of the Smith chart with Makie.jl's interactive functionalities. It demonstrates a typical scenario used to teach impedance matching, where we aim to transform a source impedance of 50+100j $\Omega$ to a load impedance of 50 $\Omega$. To achieve this, we utilize a transmission line and a parallel stub, and control their lengths via sliders. By dynamically adjusting these lengths, users can observe how the source impedance seen by the load evolves on the Smith chart, visually illustrating the impedance matching process.
 
@@ -159,6 +159,6 @@ There are multiple keywords to modify the position of the ticks. Some of them ar
 
 ### Subgrid split
 
-The `splitminor` keyword controls the number of cuts of a space between ticks when there is no zoom. See also `splitgrid` to control the split when zooming.
+The `splitminor` keyword controls the number of cuts of a space between ticks when there is no zoom. See also `splitgrid` to control the number of cuts while zooming.
 
 ![keywordexample](Images/splitminor.png)

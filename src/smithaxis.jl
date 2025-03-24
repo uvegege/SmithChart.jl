@@ -126,7 +126,7 @@ temp_plots::Observable{Vector{Tuple{Makie.Plot, String}}}
     "Color of the exterior circunference"
     spinecolor =  :black
     "Linewidth of the exterior circunference"
-    spinewidth::Float32 = 3.2
+    spinewidth::Float32 = 2.2
     "Linewidth of the horizontal line"
     spinehorizontalwidth::Float32 = 1.7
     "Linestyle of the exterior circunference"

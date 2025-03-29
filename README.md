@@ -218,7 +218,7 @@ region = poly!(ax, B, strokecolor = :black, strokewidth = 1.2, color = Pattern('
 translate!(region, (0, 0, -2)) 
 text!(ax, "Stable Input region", position = Point2f(-0.5, -0.5), font = :bold, color = :blue, fontsize = 13)
 ```
-![stabilityregions1](Images/stableregions.svg)
+![stabilityregions1](Images/bothregions.svg)
 
 It is possible to obtain the input or output stability regions with `StabilityCircle(S11, S12, S21, S22, :source, npoints)` or `StabilityCircle(S11, S12, S21, S22, :load, npoints)`.
 
@@ -241,8 +241,6 @@ text!(ax, "Stable Output", position = Point2f(0.3, 0.5), font = :bold, color = :
 ![stabilityregions2](Images/StableRegionsLines.svg)
 
 
-![ZoomGif](Images/SmithChart_zoom.gif)
-
 ## Dynamic Annotation Update
 
 You can activate a experimental dynamic curve annotation with the keyword `textupdate = true`
@@ -251,6 +249,9 @@ You can activate a experimental dynamic curve annotation with the keyword `textu
 fig = Figure(size = (800,600))
 ax = SmithAxis(fig[1, 1]; subgrid = true, cutgrid = true, zoomupdate = true, textupdate = true, threshold = (150, 150))
 ```
+
+![ZoomGif](Images/SmithChart_zoom.gif)
+
 
 ## Other Keywords
 

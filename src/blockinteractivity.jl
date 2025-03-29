@@ -233,17 +233,19 @@ Allows creating data markers with DOUBLE CLICK on the lines or scatter plots.
 
 - ax::SmithAxis is the `SmithAxis`.
 - gp::GridPosition is a GridPosition. Example: fig[1,2]
+- markerdict::Dict{Int, ComplexF64} is a Dict that stores the data of each marker. If you don't need
+the values you can ignore this argument.
 
 """
-function datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100; fontsize = 10.0, title = true, kwargs...)
+function datamarkers(ax::SmithAxis, gp::GridPosition, markerdict = Dict{Int, ComplexF64}(), priority = 100; fontsize = 10.0, title = true, kwargs...)
     
     rowpos = gp.span.rows[end]
     colpos = gp.span.cols[end]
     lbl_txt = Observable("")
     gl = GridLayout(gp, tellwidth = false, aspect = 1, tellheight = false, halign = :center, valign = :center, protrusions = (0,0,0,0))
-    Label(gl[0, 1], "Data Markers", fontize = fontsize)
+    Label(gl[0, 1], "Data Markers", fontsize = fontsize)
     Box(gl[1, 1], color = ax.scene.backgroundcolor, strokecolor = :black, strokewidth = 1)
-    lbl = Label(gl[1, 1], lbl_txt, rotation = 0, padding = (10, 10, 10, 10), fontize = fontsize)
+    lbl = Label(gl[1, 1], lbl_txt, rotation = 0, padding = (10, 10, 10, 10), fontsize = fontsize)
     #colsize!(ax.parent.layout, colpos, Aspect(1, 0.5))
     #rowgap!(gl, 0)
 
@@ -257,6 +259,14 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100; fontsize =
             lbl_txt.val *= "[$i]: " * txt * "\n"
             i = i + 1
         end
+
+        sortedkeys = sort(collect(keys(markerdict)))
+        for (id, k) in enumerate(sortedkeys)
+            vk = markerdict[k]
+            delete!(markerdict, k)
+            markerdict[id] = vk
+        end
+
         resize_to_layout!(ax.parent)
         notify(lbl_txt)
     end
@@ -293,6 +303,7 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100; fontsize =
                         reflection = posvectors[id][3]
                         freq = posvectors[id][4]
                         zi = posvectors[id][2]
+                        markerdict[length(keys(markerdict))+1] = zi[idx]
                         txt = ztotext(zi[idx], reflection, freq, idx)
                         tp = tooltip!(ax, Observable(plt[1][][idx]), string(length(ax.temp_plots.val) + 1), inspectable = true)
                         translate!(tp, 0, 0, 8000)
@@ -300,16 +311,20 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100; fontsize =
                         notify(ax.temp_plots)
                     end
                 end
-            elseif isa(plt, Makie.Text)
-                clickpos = event.data
-                diffpoints = map(ax.temp_plots.val) do (x,y)
-                    sum(abs2, clickpos - x[1][])
-                end
-                _, id = findmin(diffpoints)
-                delete!(ax, ax.temp_plots[][id][1])
-                popat!(ax.temp_plots[], id)
-                notify(ax.temp_plots)
             else
+                position = mouseposition_px(ax.scene)
+                # Use tooltip's bounding box
+                for (id, ttips) in enumerate(ax.temp_plots.val)
+                    bb = boundingbox(ttips[1])
+                    ox, oy, oz = bb.origin
+                    wx, wy, wz = bb.widths
+                    if (ox <= position[1] <= ox+wx) & (oy <= position[2] <= oy+wy)
+                        delete!(ax, ax.temp_plots[][id][1])
+                        popat!(ax.temp_plots[], id)
+                        delete!(markerdict, id)
+                        notify(ax.temp_plots)
+                    end
+                end
                 return
             end
         end

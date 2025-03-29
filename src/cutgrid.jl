@@ -1,4 +1,55 @@
-function set_Xcut(xticks, yticks, threshold, tlims)
+# Previously the intersection was hardcoded for a specific zoomlevel. It didn't work 
+# if the user changed the real or imaginary ticks. 
+function set_Xcut_alg1(xticks, yticks, threshold, tlims)
+    space = widths(tlims)[2] / 2.0
+    ycuts = xticks[end] * ones(length(yticks), )
+    prevy = 0.0
+    i = 1
+    prevx = 0.0
+    for y in yticks
+        for (xidx, xs) in enumerate(xticks)
+            prev = smith_transform(Complex(xs, prevy))
+            pact = smith_transform(Complex(xs, y))
+            dist = hypot((prev-pact)...)
+            if dist < threshold * space
+                xs_ = xs
+                if prevx == xs # Test next xs
+                    if xidx != length(xticks)
+                        xs_ = xticks[xidx+1]
+                    end
+                end
+                ycuts[i] = xs_
+                i = i + 1
+                prevx = xs_
+                break
+            end
+        end
+        prevy = y
+    end
+
+    ycuts[end] = maximum(ycuts) * (1.5 + 1.5/space)
+
+    if space <= 0.6
+        for i in eachindex(ycuts)
+            i == length(ycuts) && break
+            x = findfirst(>(ycuts[i]), ycuts)
+            if !isnothing(x)
+                ycuts[i] = ycuts[x]
+            end
+        end
+    end
+    return ycuts
+end
+
+
+function set_Rcut_alg1(xticks, yticks, threshold, tlims)
+    return set_Xcut_alg2(yticks, xticks, threshold, tlims )
+end
+
+# This functions are inspired on the grid generation method used in pySmithPlot
+# with some simplifications.
+# https://github.com/vMeijin/pySmithPlot
+function set_Xcut_alg2(xticks, yticks, threshold, tlims)
     space = widths(tlims)[2] / 2.0
     ycuts = xticks[end] * ones(length(yticks), )
     setyticks = Set(yticks)
@@ -33,7 +84,7 @@ function set_Xcut(xticks, yticks, threshold, tlims)
     return ycuts
 end
 
-function set_Rcut(xticks, yticks, threshold, tlims)
+function set_Rcut_alg2(xticks, yticks, threshold, tlims)
     space = widths(tlims)[1] / 2.0
     xcuts = yticks[end] * ones(length(xticks), )
     setxticks = Set(xticks)

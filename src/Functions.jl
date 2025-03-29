@@ -170,3 +170,119 @@ function rectangular_shape(s = 1e5)
 end
 
 
+
+"""
+    NFCircle(F, Fmin, Γopt, Rn, Zo)
+
+Computes the points of the constant Noise Figure Circle.
+
+- F: noise factor
+- Fmin: minimum noise factor
+- Γopt: optimimum source reflection coefficient related to Zopt or Yopt.
+- Rn: noise resistance parameter
+- Zo: Reference Impedance
+- Np: Number of points
+"""
+function NFCircle(F, Fmin, Γopt, Rn, Zo, Np)
+    N = (F - Fmin)/(4*Rn/Zo) * abs2(1 + Γopt)
+    center = Γopt / (N + 1)
+    rad = sqrt(N*(N+1-abs2(Γopt)))/(N+1)
+    x, y = real(center), imag(center)
+    return [Point2f(rad * cos(th) + x, rad * sin(th) + y) for th in range(-π, π, Np)]
+end
+
+"""
+    CGCircle(gi, Sii)
+
+Computes the points of the Constant Gain Circle.
+
+- gi: It's gsource or gload and it's value is G / Gmax
+- Sii: Reflection S parameter. S11 for Gs and S22 for Gl. 
+- Np: Number of points
+
+"""
+function CGCircle(gi, Sii, Np)
+    center = (gi * conj(Sii)) / (1 - abs2(Sii)*(1 - gi))
+    rad = (sqrt(1-gi) * (1 - abs2(Sii))) / (1 - abs2(Sii)*(1 - gi))
+    x, y = real(center), imag(center)
+    return [Point2f(rad * cos(th) + x, rad * sin(th) + y) for th in range(-π, π, Np)]
+end
+
+# Stability Circunferences
+
+"""
+    StabilityCircle(S11, S12, S21, S22, inout::Symbol, Np; stable = false)
+
+Computes the region of stability (or unstability) and returns a Makie.Polygon.
+
+- Sii: S-parameter
+- inout: a symbol selecting source or load regions. Valid values are :load or :source.
+- Np: Number of points.
+- stable: Selects if the region corresponds to the stable (true) or unstable (false) region.
+"""
+function StabilityCircle(S11, S12, S21, S22, inout::Symbol, Np; stable = false)
+    if inout == :load
+        S11, S22 = S22, S11
+    end
+    Δ =  S11 * S22 - S12 * S21
+    center = conj(S22 - Δ*conj(S11)) / (abs2(S22) - abs2(Δ))
+    rad = abs(S12 * S21) / (abs2(S22) - abs2(Δ))
+    x, y = real(center), imag(center)
+    points = [Point2f(rad * cos(th) + x, rad * sin(th) + y) for th in range(-π, π, Np)]
+    circshape = circular_shape(Np)
+    # Check if:
+    if sqrt(sum(abs2, center)) + rad <= 1  # Stability Circle INSIDE Smith Chart
+        if abs(S11) < 1
+            outpolygon = stable == true ? Makie.Polygon(circshape, [points]) : Makie.Polygon(points)
+        else
+            outpolygon = stable == true ?  Makie.Polygon(points) : Makie.Polygon(circshape, [points])
+        end
+    elseif sqrt(sum(abs2, center)) + 1 <= rad # Smith Chart INSIDE Stability Circle (Unconditionally Stable)
+        outpolygon = stable == true ? Makie.Polygon(circshape) : Makie.Polygon([Point2f(NaN) for _ in 1:3])
+    elseif sqrt(sum(abs2, center)) - rad > 1  # Stability Circle OUTSIDE Smith Chart (Unconditionally Stable)
+        outpolygon = stable == true ? Makie.Polygon(circshape) : Makie.Polygon([Point2f(NaN) for _ in 1:3])
+    else
+        Cr = real(center)
+        Ci = imag(center)
+        #Γi = (k - (Cr * Γr)) / Ci
+        #Γr^2 + (Γi)^2 = 1
+        #Γr^2 + ((k - (Cr * Γr))/Ci)^2 = 1
+        #Ci^2*Γr^2   + k^2 + Cr^2*Γr^2 - 2*k*Cr*Γr - Ci^2 = 0
+        #Ci^2 * Γr^2 + Cr*Γr^2 - 2*k*Cr*Γr - (Ci^2 + k^2) = 0
+        #(Ci^2 + Cr^2) * Γr^2    - 2*k*Cr*Γr  + (-Ci^2 + k^2) = 0
+        k = (Cr^2 + Ci^2 - rad^2 + 1)/2
+        a = (Ci^2 + Cr^2)
+        b = -(2*k*Cr)
+        c = (-Ci^2 + k^2)
+        v = sqrt(b^2-4*a*c)
+        Γr = [(-b + v)/(2*a), (-b - v)/(2*a)]
+        Γi = @. (k - (Cr * Γr)) / Ci
+        P = Point2f.(Γr, Γi)
+        v = map(x -> x - Point2f(Cr, Ci), P)
+        angles_stability = map(x->atan(x[2], x[1]), v)
+        angles_smith = map(x->atan(x[2], x[1]), P)
+        # Case 1: |S11| < 1
+        ids = sortperm(angles_smith)
+        sort!(angles_smith)
+        angles_stability = angles_stability[reverse(ids)]
+        # Case 2: |S11| > 1
+        if ((abs(S11) > 1) & (stable == false)) | ((abs(S11) < 1) & (stable == true))
+            reverse!(angles_smith)
+            reverse!(angles_stability)
+            angles_smith[end] += 2*pi
+        end
+        stability_points = [Point2f(rad * cos(th) + x, rad * sin(th) + y) 
+            for th in range(angles_stability[1], angles_stability[2], Np)]
+        smith_points = [Point2f(cos(th), sin(th)) 
+            for th in range(angles_smith[1], angles_smith[2], Np)]
+        
+        outpolygon = Makie.Polygon(vcat(smith_points, stability_points))
+    end
+
+    return outpolygon
+end
+
+
+
+# Forbidden regions
+

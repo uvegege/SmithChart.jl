@@ -25,6 +25,8 @@ temp_plots::Observable{Vector{Tuple{Makie.Plot, String}}}
     type::Symbol = :Z 
     "Controls the cut of the lines."
     cutgrid::Bool = true
+    "Select cutgrid algorithm (1 or 2)"
+    cutgridalg::Int = 2
     "Controls if there is a subgrid drawn in the image."
     subgrid::Bool = false
     "Controls the interactive `subgrid` update while zooming."
@@ -141,10 +143,12 @@ temp_plots::Observable{Vector{Tuple{Makie.Plot, String}}}
     zgridcolor = nothing
     "Controls the color of Y smith chart grid"
     ygridcolor = nothing
-    "Controls the number of times the grid is splitted"
-    splitgrid::Int = 3
-    "Controls the number of times the grid is splited when zoomlevel = 0"
-    splitminor::Int = 1
+    """
+    Controls the number of times the grid is splitted. Each position on the tuple indicates
+    the number of lines that splits a interval for a specific zoomlevel. 
+    When zoomlevel > length(splitgrid) the used value is the last one. 
+    """
+    splitgrid = (1, 1, 3)
 
     # RESISTANCE grid
     "Sets the z value of the RESISTANCE arcs grid. To Place the grid above plots set a value > 1"

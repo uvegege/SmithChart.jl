@@ -31,12 +31,17 @@ function draw_axis!(sc::SmithAxis)
 
     onany(sc.blockscene, sc.rvals, sc.xvals, sc.threshold, sc.zoomlevel) do rticks, xticks, th, _
         thr, thx = th
-        sc.xcutvals[] = set_Xcut(rticks, xticks, thx/1000, sc.targetlimits[])
-        sc.rcutvals[] = set_Rcut(rticks, xticks, thr/1000, sc.targetlimits[])
+        if sc.cutgridalg[] == 1 
+            sc.xcutvals[] = set_Xcut_alg1(rticks, xticks, thx/1000, sc.targetlimits[])
+            sc.rcutvals[] = set_Rcut_alg1(rticks, xticks, thr/1000, sc.targetlimits[])
+        else
+            sc.xcutvals[] = set_Xcut_alg2(rticks, xticks, thx/1000, sc.targetlimits[])
+            sc.rcutvals[] = set_Rcut_alg2(rticks, xticks, thr/1000, sc.targetlimits[])
+        end
     end
 
-    sc.rvals[] = sc.xvals[]
-    sc.rvals[] = sc.xvals[]
+    sc.rvals[] = sc.rvals[]
+    sc.xvals[] = sc.xvals[]
     
     #TODO: Maybe use a vector with more elements for zvals so you can add more elements
     LSType = typeof(LineString(Point2f[]))
@@ -176,65 +181,69 @@ function draw_axis!(sc::SmithAxis)
 
     translate!.((xticklabelplot, bticklabelplot), 0, 0, 9000)
     translate!.((rticklabelplot, gticklabelplot), 0, 0, -1)
-    translate!.((rticklabelsct, gticklabelsct), 0, 0, -2)
+    translate!.((rticklabelsct, gticklabelsct), 0, 0, -3)
 
     # 2. SUBGRID
     rsubgridpoints = Observable{Vector{LSType}}()
-    onany(sc.blockscene, sc.cutgrid, sc.zoomlevel, sc.rvals, sc.splitminor, sc.splitgrid,
-        sc.sample_density, sc.type, sc.rcutvals) do cgrid, zlevel, zvals, sminor, splitv, density, smtype, cuts
+    onany(sc.blockscene, sc.cutgrid, sc.zoomlevel, sc.rvals, sc.splitgrid,
+        sc.sample_density, sc.type, sc.rcutvals) do cgrid, zlevel, zvals, splitv, density, smtype, cuts
+            splitval = zlevel > length(splitv) ? splitv[end] : splitv[max(zlevel, 1)]
             if zlevel < 1
-                if sminor > 0
-                    vals = create_subgrid(zvals, sminor)
+                if splitval > 0
+                    vals = create_subgrid(zvals, splitval)
                 else
-                    vals = [[NaN for _ in 1:sminor*length(zvals)]]
+                    vals = [[NaN for _ in 1:splitval*length(zvals)]]
                 end
             else
-                vals = reduce(vcat, splitintervals(createintervals(zvals), splitv))
+                vals = reduce(vcat, splitintervals(createintervals(zvals), splitval))
             end
             arc_grid_points!(rsubgridpoints, cgrid, zlevel, vals, density, smtype, zvals, cuts; impedance = true, realpart = true, subgrid = true)
         end
 
     xsubgridpoints = Observable{Vector{LSType}}()
-    onany(sc.blockscene, sc.cutgrid, sc.zoomlevel, sc.xvals, sc.splitminor, sc.splitgrid,
-        sc.sample_density, sc.type, sc.xcutvals) do cgrid, zlevel, zvals, sminor, splitv, density, smtype, cuts
+    onany(sc.blockscene, sc.cutgrid, sc.zoomlevel, sc.xvals, sc.splitgrid,
+        sc.sample_density, sc.type, sc.xcutvals) do cgrid, zlevel, zvals, splitv, density, smtype, cuts
+            splitval = zlevel > length(splitv) ? splitv[end] : splitv[max(zlevel, 1)]
             if zlevel < 1
-                if sminor > 0
-                    vals = create_subgrid(zvals, sminor)
+                if splitval > 0
+                    vals = create_subgrid(zvals, splitval)
                 else
-                    vals = [[NaN for _ in 1:sminor*length(zvals)]]
+                    vals = [[NaN for _ in 1:splitval*length(zvals)]]
                 end
             else
-                vals = reduce(vcat, splitintervals(createintervals(zvals), splitv))
+                vals = reduce(vcat, splitintervals(createintervals(zvals), splitval))
             end
             arc_grid_points!(xsubgridpoints, cgrid, zlevel, vals, density, smtype, zvals, cuts; impedance = true, realpart = false, subgrid = true)
         end
 
     gsubgridpoints = Observable{Vector{LSType}}()
-    onany(sc.blockscene, sc.cutgrid, sc.zoomlevel, sc.gvals, sc.splitminor, sc.splitgrid,
-        sc.sample_density, sc.type, sc.rcutvals) do cgrid, zlevel, zvals, sminor, splitv, density, smtype, cuts
+    onany(sc.blockscene, sc.cutgrid, sc.zoomlevel, sc.gvals, sc.splitgrid,
+        sc.sample_density, sc.type, sc.rcutvals) do cgrid, zlevel, zvals, splitv, density, smtype, cuts
+            splitval = zlevel > length(splitv) ? splitv[end] : splitv[max(zlevel, 1)]
             if zlevel < 1
-                if sminor > 0
-                    vals = create_subgrid(zvals, sminor)
+                if splitval > 0
+                    vals = create_subgrid(zvals, splitval)
                 else
-                    vals = [[NaN for _ in 1:sminor*length(zvals)]]
+                    vals = [[NaN for _ in 1:splitval*length(zvals)]]
                 end
             else
-                vals = reduce(vcat, splitintervals(createintervals(zvals), splitv))
+                vals = reduce(vcat, splitintervals(createintervals(zvals), splitval))
             end
             arc_grid_points!(gsubgridpoints, cgrid, zlevel, vals, density, smtype, zvals, cuts; impedance = false, realpart = true, subgrid = true)
         end
 
     bsubgridpoints = Observable{Vector{LSType}}()
-    onany(sc.blockscene, sc.cutgrid, sc.zoomlevel, sc.bvals, sc.splitminor, sc.splitgrid,
-        sc.sample_density, sc.type, sc.xcutvals) do cgrid, zlevel, zvals, sminor, splitv, density, smtype, cuts
+    onany(sc.blockscene, sc.cutgrid, sc.zoomlevel, sc.bvals, sc.splitgrid,
+        sc.sample_density, sc.type, sc.xcutvals) do cgrid, zlevel, zvals, splitv, density, smtype, cuts
+            splitval = zlevel > length(splitv) ? splitv[end] : splitv[max(zlevel, 1)] 
             if zlevel < 1
-                if sminor > 0
-                    vals = create_subgrid(zvals, sminor)
+                if splitval > 0
+                    vals = create_subgrid(zvals, splitval)
                 else
-                    vals = [[NaN for _ in 1:sminor*length(zvals)]]
+                    vals = [[NaN for _ in 1:splitval*length(zvals)]]
                 end
             else
-                vals = reduce(vcat, splitintervals(createintervals(zvals), splitv))
+                vals = reduce(vcat, splitintervals(createintervals(zvals), splitval))
             end
             arc_grid_points!(bsubgridpoints, cgrid, zlevel, vals, density, smtype, zvals, cuts; impedance = false, realpart = false, subgrid = true)
         end
@@ -346,7 +355,7 @@ function draw_axis!(sc::SmithAxis)
     )
 
     translate!.((rlabelplot, xlabelplot), 0, 0, -1)
-    translate!.((rlabelsct, xlabelsct), 0, 0, -2)
+    translate!.((rlabelsct, xlabelsct), 0, 0, -3)
 
     # PLOT SPINE
 

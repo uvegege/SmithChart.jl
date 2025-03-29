@@ -8,7 +8,6 @@ using Makie.GeometryBasics: LineString
 using Makie: inherit, automatic
 using Printf
 
-
 include("./smithaxis.jl")
 include("./blockinteractivity.jl")
 include("./drawaxis.jl")
@@ -27,6 +26,7 @@ export SmithLine, smithplot, smithplot!
 export SmithScatter, smithscatter, smithscatter!
 export vswr, vswr!
 export datamarkers
+export NFCircle, CGCircle, StabilityCircle
 
 end
 

@@ -219,7 +219,6 @@ translate!(region, (0, 0, -2))
 text!(ax, "Stable Input", position = Point2f(0.1, 0.15), font = :bold, color = :blue, fontsize = 15)
 ```
 ![stabilityregions1](Images/bothregions.svg)
-![stabilityregions1](Images/bothregions.png)
 
 It is possible to obtain the input or output stability regions with `StabilityCircle(S11, S12, S21, S22, :source, npoints)` or `StabilityCircle(S11, S12, S21, S22, :load, npoints)`.
 

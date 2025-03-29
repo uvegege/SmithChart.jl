@@ -211,14 +211,15 @@ B =  StabilityCircle(S11, S12, S21, S22, :source, 361; stable = true)
 ax = SmithAxis(f[1,1], subtitle = "StabilityCircle(... ; stable = false)")
 region = poly!(ax, A, strokecolor = :black, strokewidth = 1.2, color = Pattern('x', linecolor = :red, width = 1.3, background_color = (:red, 0.1)))
 translate!(region, (0, 0, -2)) 
-text!(ax, "Unstable Input Region", position = Point2f(-0.1, -0.5), font = :bold, color = :red, fontsize = 13)
+text!(ax, "Unstable Input", position = Point2f(-0.1, -0.5), font = :bold, color = :red, fontsize = 15)
 B =  StabilityCircle(S11, S12, S21, S22, :source, 361; stable = true);
 ax = SmithAxis(f[1,2], subtitle = "StabilityCircle(... ; stable = true)")
 region = poly!(ax, B, strokecolor = :black, strokewidth = 1.2, color = Pattern('\\', linecolor = :blue, width = 1.3, background_color = (:blue, 0.1)))
 translate!(region, (0, 0, -2)) 
-text!(ax, "Stable Input region", position = Point2f(-0.5, -0.5), font = :bold, color = :blue, fontsize = 13)
+text!(ax, "Stable Input", position = Point2f(0.1, 0.15), font = :bold, color = :blue, fontsize = 15)
 ```
 ![stabilityregions1](Images/bothregions.svg)
+![stabilityregions1](Images/bothregions.png)
 
 It is possible to obtain the input or output stability regions with `StabilityCircle(S11, S12, S21, S22, :source, npoints)` or `StabilityCircle(S11, S12, S21, S22, :load, npoints)`.
 

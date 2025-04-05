@@ -2,7 +2,7 @@ module SmithChart
 
 using Makie
 using Makie: parent_scene, shift_project, update_tooltip_alignment!, position2string
-if VERSION >= v"1.10"
+if VERSION <= v"1.11"
     using Makie: make_block_docstring
 end
 using Makie.GeometryBasics: Polygon

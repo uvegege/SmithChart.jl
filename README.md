@@ -120,7 +120,7 @@ fig
 
 Interactive data markers can be added to your Smith chart using the `datamarkers(sc::SmithAxis, gp::GridPosition)` function. Double-click on lines or scatter plots to place a marker. To remove a marker, double-click on it. It is possible to move the marker by dragging it with the left click.
 
-![datamarkergif](Images/datamarker_drag.gif.gif)
+![datamarkergif](Images/datamarker_drag.gif)
 
 
 ## Stability, Gain and Noise Circles

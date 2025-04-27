@@ -7,7 +7,8 @@ mouseeventhandle::Makie.MouseEventHandle
 scrollevents::Observable{ScrollEvent}
 keysevents::Observable{KeysEvent}
 interactions::Dict{Symbol, Tuple{Bool, Any}}
-temp_plots::Observable{Vector{Tuple{Makie.Plot, String}}}
+temp_plots::Observable{Vector{Any}}
+#temp_plots::Observable{Vector{Tuple{Makie.Plot, String, Makie.Plot, Int64, Bool, Vector{<:Real}}}}
 
 @attributes begin
     """

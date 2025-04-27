@@ -223,9 +223,6 @@ function ztotext(zi, reflection, freq, idx)
     return txt
 end
 
-#TODO: Dragg markers
-#TODO: Associate markers to a specific plot.
-#TODO: save marker's DATA
 """
     datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100; fontsize = 10.0, title = true, kwargs...)
 
@@ -256,10 +253,10 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, markerdict = Dict{Int, Com
         for (plt, txt) in tplots
             plt[2].val = string(i)
             notify(plt[2])
-            lbl_txt.val *= "[$i]: " * txt * "\n"
+            lbl_txt.val *= "[$i]: " * txt[] * "\n"
             i = i + 1
         end
-
+        
         sortedkeys = sort(collect(keys(markerdict)))
         for (id, k) in enumerate(sortedkeys)
             vk = markerdict[k]
@@ -267,7 +264,7 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, markerdict = Dict{Int, Com
             markerdict[id] = vk
         end
 
-        resize_to_layout!(ax.parent)
+        #resize_to_layout!(ax.parent)
         notify(lbl_txt)
     end
 
@@ -304,10 +301,11 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, markerdict = Dict{Int, Com
                         freq = posvectors[id][4]
                         zi = posvectors[id][2]
                         markerdict[length(keys(markerdict))+1] = zi[idx]
-                        txt = ztotext(zi[idx], reflection, freq, idx)
-                        tp = tooltip!(ax, Observable(plt[1][][idx]), string(length(ax.temp_plots.val) + 1), inspectable = true)
+                        txt = Observable(ztotext(zi[idx], reflection, freq, idx))
+                        tooltiposition = Observable(plt[1][][idx])
+                        tp = tooltip!(ax, tooltiposition, string(length(ax.temp_plots.val) + 1), inspectable = true)
                         translate!(tp, 0, 0, 8000)
-                        push!(ax.temp_plots.val, (tp, txt))
+                        push!(ax.temp_plots.val, (tp, txt, plt, Observable(idx), reflection, freq))
                         notify(ax.temp_plots)
                     end
                 end
@@ -316,8 +314,8 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, markerdict = Dict{Int, Com
                 # Use tooltip's bounding box
                 for (id, ttips) in enumerate(ax.temp_plots.val)
                     bb = boundingbox(ttips[1])
-                    ox, oy, oz = bb.origin
-                    wx, wy, wz = bb.widths
+                    ox, oy, _ = bb.origin
+                    wx, wy, _ = bb.widths
                     if (ox <= position[1] <= ox+wx) & (oy <= position[2] <= oy+wy)
                         delete!(ax, ax.temp_plots[][id][1])
                         popat!(ax.temp_plots[], id)
@@ -327,6 +325,56 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, markerdict = Dict{Int, Com
                 end
                 return
             end
+        end
+    end
+
+    dragactive = Observable(false)
+    temp_plot_id = Observable(1)
+    # Maybe i shold not check de next and previous one and go directly to the closest one
+    # Register interaction related to drag
+    register_interaction!(ax, :leftdragtooltip) do event::MouseEvent, ax
+
+        if event.type === MouseEventTypes.leftdragstart
+            position = mouseposition_px(ax.scene)
+            # Get the tooltip id on temp_plots
+            for (id, ttips) in enumerate(ax.temp_plots.val)
+                bb = boundingbox(ttips[1])
+                ox, oy, _ = bb.origin
+                wx, wy, _ = bb.widths
+                if (ox <= position[1] <= ox+wx) & (oy <= position[2] <= oy+wy)
+                    dragactive[] = true
+                    temp_plot_id[] = id
+                    break
+                end
+            end
+            
+        elseif event.type === MouseEventTypes.leftdrag
+            if dragactive[] == false
+                return
+            end
+
+            # Now we need to check the direction of the movement and change the 
+            # idx (index of the plot) that the tooltip is inspecting. 
+            # I need to keep the tooltip on the same line
+            pos_act = event.data
+            pos_prev = event.prev_data
+
+            if pos_act == pos_prev
+                return 
+            end
+            tooltip, _, plt, act_idx, reflection, freq = ax.temp_plots.val[temp_plot_id[]]
+            new_idx = argmin(map(plt[1][]) do pos
+                sqrt(sum(abs2, pos_act - pos))
+            end)
+            new_position = plt[1][][new_idx]
+            act_idx[] = new_idx
+            tooltip[1][] = new_position
+            zi = reflection == true ? Complex(new_position...) : coords_to_z(new_position...)
+            ax.temp_plots.val[temp_plot_id[]][2][] = ztotext(zi, reflection, freq, new_idx)
+            notify(ax.temp_plots)
+
+        elseif event.type === MouseEventTypes.leftdragstop
+            dragactive[] = false
         end
     end
     return nothing

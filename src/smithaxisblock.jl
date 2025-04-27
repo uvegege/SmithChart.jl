@@ -1,6 +1,7 @@
 function Makie.initialize_block!(sc::SmithAxis; palette=nothing)
 
-    setfield!(sc, :temp_plots, Observable(Tuple{Makie.Plot, String}[]) )
+    #setfield!(sc, :temp_plots, Observable(Tuple{Makie.Plot, String, Makie.Plot, Int64, Bool, Vector{<:Real}}[]) )
+    setfield!(sc, :temp_plots, Observable([]))
     targetlimits = Observable{Rect2f}(scdefaultlimits(sc.limits[]))
     setfield!(sc, :targetlimits, targetlimits)
     

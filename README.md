@@ -7,8 +7,6 @@ This project originated as an exploration of the interactive possibilities that 
 
 **Note**: Some of the features are experimental. They might not function fully as expected or could be subject to changes in future versions. 
 
-**Note**: It is possible that currently there are too many keywords. Options are being considered to simplify some aspects.
-
 ## Usage
 
 ```julia
@@ -120,9 +118,9 @@ fig
 
 ## Interactive Data Markers
 
-Interactive data markers can be added to your Smith chart using the `datamarkers(sc::SmithAxis, gp::GridPosition)` function. Double-click on lines or scatter plots to place a marker. To remove a marker, double-click on it. Future enhancements may include marker dragging and real-time information updates.
+Interactive data markers can be added to your Smith chart using the `datamarkers(sc::SmithAxis, gp::GridPosition)` function. Double-click on lines or scatter plots to place a marker. To remove a marker, double-click on it. It is possible to move the marker by dragging it with the left click.
 
-![datamarkergif](Images/datamarkers.gif)
+![datamarkergif](Images/datamarker_drag.gif.gif)
 
 
 ## Stability, Gain and Noise Circles
@@ -277,6 +275,6 @@ There are multiple keywords to modify the position of the ticks. Some of them ar
 
 ### Subgrid split
 
-The `splitgrid` keyword controls the number of cuts for each zoomlevel. The value should be a 
+The `splitgrid` keyword controls the number of cuts for each zoomlevel.
 
 ![keywordexample](Images/splitminor.png)

@@ -29,7 +29,7 @@ Interpolation using previously defined functions.
 """
 function create_subgrid(vals, nsplit; refine = true)
     values = createintervals(vals; lastvalue = maximum(vals)*2)
-    vsubgrid = stack(splitintervals(createintervals(vals; lastvalue = maximum(vals)*2), nsplit))[:]
+    vsubgrid = reduce(vcat, splitintervals(createintervals(vals; lastvalue = maximum(vals)*2), nsplit))
     return vsubgrid
 end
 

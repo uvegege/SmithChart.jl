@@ -17,8 +17,8 @@ include("./Functions.jl")
 include("./cutgrid.jl")
 
 include("./Recipes.jl")
-include("./interactivetext.jl")
-include("./interactivezoom.jl")
+include("./Interactivetext.jl")
+include("./Interactivezoom.jl")
 include("./vswr.jl")
 
 export SmithAxis

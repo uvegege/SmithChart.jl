@@ -16,7 +16,7 @@ include("./smithaxisblock.jl")
 include("./Functions.jl")
 include("./cutgrid.jl")
 
-include("./recipes.jl")
+include("./Recipes.jl")
 include("./interactivetext.jl")
 include("./interactivezoom.jl")
 include("./vswr.jl")

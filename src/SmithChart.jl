@@ -2,9 +2,6 @@ module SmithChart
 
 using Makie
 using Makie: parent_scene, shift_project, update_tooltip_alignment!, position2string
-#if VERSION >= v"1.11" # Setting [compat] to Makie = "0.20.10" I don't need this
-#    using Makie: make_block_docstring
-#end
 using Makie.GeometryBasics: Polygon
 using Makie: DragPan, ScrollZoom, LimitReset
 using Makie.GeometryBasics: LineString
@@ -16,7 +13,7 @@ include("./blockinteractivity.jl")
 include("./drawaxis.jl")
 include("./smithaxisblock.jl")
 
-include("./functions.jl")
+include("./Functions.jl")
 include("./cutgrid.jl")
 
 include("./recipes.jl")

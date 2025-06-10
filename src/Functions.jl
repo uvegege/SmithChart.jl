@@ -176,12 +176,29 @@ end
 
 Computes the points of the constant Noise Figure Circle.
 
+## Arguments
+
 - F: noise factor
 - Fmin: minimum noise factor
 - Γopt: optimimum source reflection coefficient related to Zopt or Yopt.
 - Rn: noise resistance parameter
 - Zo: Reference Impedance
 - Np: Number of points
+
+## Example
+
+```
+using SmithChart
+
+NF_to_F(nf) = 10.0^(nf/10.0)
+Γopt = 0.5 * cis(130 * pi / 180)
+NFmin = 1.6 # dB
+Fmin = NF_to_F(NFmin)
+F2dB = NF_to_F(2.0)
+nf2 = NFCircle(F2dB, Fmin, Γopt, 20.0, 50.0, 361)
+
+```
+
 """
 function NFCircle(F, Fmin, Γopt, Rn, Zo, Np)
     N = (F - Fmin)/(4*Rn/Zo) * abs2(1 + Γopt)
@@ -196,9 +213,24 @@ end
 
 Computes the points of the Constant Gain Circle.
 
+## Arguments
+
 - gi: It's gsource or gload and it's value is G / Gmax
 - Sii: Reflection S parameter. S11 for Gs and S22 for Gl. 
 - Np: Number of points
+
+## Example
+
+```
+using SmithChart
+
+S11 = 0.533 * cis(176.6 / 180 * π)
+Gs_max = 1 / (1 - abs2(S11))
+gain(dB) = 10.0^(dB/10.0)
+g1 = gain(0.0) / Gs_max
+c1 = CGCircle(g1, S11, 361)
+
+```
 
 """
 function CGCircle(gi, Sii, Np)
@@ -215,10 +247,23 @@ end
 
 Computes the region of stability (or unstability) and returns a Makie.Polygon.
 
+## Arguments
+
 - Sii: S-parameter
 - inout: a symbol selecting source or load regions. Valid values are :load or :source.
 - Np: Number of points.
 - stable: Selects if the region corresponds to the stable (true) or unstable (false) region.
+
+## Examples
+
+```
+using SmithChart
+
+S11, S12, S21, S22 =  [0.438868-0.778865im 1.4+0.2im; 0.1+0.43im  0.692125-0.361834im]
+A =  StabilityCircle(S11, S12, S21, S22, :source, 361; stable = false)
+
+```
+
 """
 function StabilityCircle(S11, S12, S21, S22, inout::Symbol, Np; stable = false)
     if inout == :load

@@ -226,12 +226,28 @@ end
 """
     datamarkers(ax::SmithAxis, gp::GridPosition, priority = 100; fontsize = 10.0, title = true, kwargs...)
 
-Allows creating data markers with DOUBLE CLICK on the lines or scatter plots.
+Allows creating data markers with double click on the lines or scatter plots.
+
+## Arguments
 
 - ax::SmithAxis is the `SmithAxis`.
 - gp::GridPosition is a GridPosition. Example: fig[1,2]
 - markerdict::Dict{Int, ComplexF64} is a Dict that stores the data of each marker. If you don't need
 the values you can ignore this argument.
+
+## Examples
+
+```
+using SmithChart
+using GLMakie
+
+fig = Figure(size = (800, 600))
+sc = SmithAxis(fig[1, 1], cutgrid = true)
+r = 0.6 .+ 0.35 * cis.(range(0, 2π; length = 300))
+smithplot!(sc, r; color = :dodgerblue, linewidth = 2)
+datamarkers(sc, fig[1,2])
+fig
+```
 
 """
 function datamarkers(ax::SmithAxis, gp::GridPosition, markerdict = Dict{Int, ComplexF64}(), priority = 100; fontsize = 10.0, title = true, kwargs...)

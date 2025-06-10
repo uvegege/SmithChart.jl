@@ -1,0 +1,6 @@
+[deps]
+Bonito = "824d6782-a2ef-11e9-3a09-e5662e0c26f8"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
+SmithChart = "0c39085a-4a17-4c0c-9861-c4c53bcea38a"

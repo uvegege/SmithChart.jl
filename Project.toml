@@ -1,7 +1,7 @@
 name = "SmithChart"
 uuid = "0c39085a-4a17-4c0c-9861-c4c53bcea38a"
 authors = [""]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
@@ -10,8 +10,10 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 [compat]
 julia = "1.8.5"
 Makie = "0.20.10"
+
 [extras]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["Test", "Documenter"]

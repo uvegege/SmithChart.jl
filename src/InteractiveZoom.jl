@@ -59,8 +59,7 @@ end
 """
     createintervals(v)
 
-- `create_midpoint = true`: Create intervals from a vector of values. If the difference between a value and the previous one
-is bigger than the 2*value, it creates a point in the middle.
+- `create_midpoint = true`: Create intervals from a vector of values. If the difference between a value and the previous one is bigger than the 2*value, it creates a point in the middle.
 - `initvalue = 0.0`
 - `lastvalue = 80.0`
 """

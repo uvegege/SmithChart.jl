@@ -3,7 +3,7 @@
 
 Plot lines on the Smith Chart.
 
-# Valid Keywords:
+## Valid Keywords:
 
 - `color`  sets the color of the marker. Read `? scatter`.
 - `colormap = :viridis` sets the colormap that is sampled for numeric colors. 
@@ -12,6 +12,22 @@ Plot lines on the Smith Chart.
 - `label = nothing`
 - `reflection = false`: Specifies whether it is a normalized impedance or a reflection coefficient.
 - `freq = Float64[]` Array of frequencies associated with each represented value. Mainly used by `DataInspector`.
+
+## Examples
+
+```
+using SmithChart
+using CairoMakie
+
+fig = Figure(size = (800, 600))
+sc = SmithAxis(fig[1, 1], cutgrid = true)
+r = 0.6 .+ 0.15 * exp.(1im .* range(0, 2π; length = 300))
+smithplot!(sc, r; color = :dodgerblue, linewidth = 2)
+fig
+```
+
+```
+
 """
 @recipe(SmithPlot, z) do scene
     Attributes(
@@ -33,7 +49,7 @@ Makie.preferred_axis_type(plot::SmithPlot) = SmithAxis
 
 Scatter points on the Smith Chart.
 
-# Valid Keywords:
+## Valid Keywords:
 
 - `color`  sets the color of the marker. Read `? scatter`.
 - `colormap = :viridis` sets the colormap that is sampled for numeric colors. 
@@ -42,6 +58,21 @@ Scatter points on the Smith Chart.
 - `label = nothing`
 - `reflection = false`: Specifies whether it is a normalized impedance or a reflection coefficient.
 - `freq = Float64[]` Array of frequencies associated with each represented value. Mainly used Mainly used by `DataInspector`.
+
+## Examples
+
+```
+using SmithChart
+using CairoMakie
+
+fig = Figure(size = (800, 600))
+sc = SmithAxis(fig[1, 1], cutgrid = true)
+r = 0.6 .+ 0.15 * exp.(1im .* range(0, 2π; length = 300))
+smithscatter!(sc, r; color = :dodgerblue, linewidth = 2)
+fig
+```
+
+
 """
 @recipe(SmithScatter, z) do scene
     Attributes(

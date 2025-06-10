@@ -2,6 +2,7 @@ using SmithChart
 using Test
 
 @testset "SmithChart.jl" begin
+    using CairoMakie
     f = Figure(size = (1200, 800))
     sc = SmithAxis(f[1,1], type = :Z, subtitle = "type :Z (default)")
     sc = SmithAxis(f[1,2], type = :Y, subtitle = "type :Y")

@@ -29,17 +29,15 @@ fig
 ```
 
 """
-@recipe(SmithPlot, z) do scene
-    Attributes(
-        color=:teal,
-        colormap=:viridis,
-        line_width=2.8,
-        linestyle=:solid,
-        label=nothing,
-        reflection=false,
-        freq = Float64[],
-        cycle=[:color]
-    )
+@recipe SmithPlot (z, ) begin
+    color=:teal
+    colormap=:viridis
+    line_width=2.8
+    linestyle=:solid
+    label=nothing
+    reflection=false
+    freq = Float64[]
+    cycle=[:color]
 end
 
 Makie.preferred_axis_type(plot::SmithPlot) = SmithAxis 
@@ -74,17 +72,15 @@ fig
 
 
 """
-@recipe(SmithScatter, z) do scene
-    Attributes(
-        color=:teal,
-        colormap=:viridis,
-        marker=:circle,
-        markersize=9,
-        label="",
-        reflection=false,
-        freq = Float64[],
+@recipe SmithScatter (z, ) begin 
+        color=:teal
+        colormap=:viridis
+        marker=:circle
+        markersize=9
+        label=""
+        reflection=false
+        freq = Float64[]
         cycle=[:color]
-    )
 end
 
 Makie.preferred_axis_type(plot::SmithScatter) = SmithAxis 
@@ -209,6 +205,7 @@ end
 
 
 function Makie.plot!(sc::SmithScatter)
+    @show sc.attributes
     z = sc[1]
     color = sc[:color]
     markersize = sc[:markersize]

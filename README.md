@@ -1,5 +1,8 @@
 # SmithChart
 
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://uvegege.github.io/SmithChart.jl/dev/)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://uvegege.github.io/SmithChart.jl/stable/)
+
 A Julia library for creating interactive Smith charts using Makie.jl.
 This project originated as an exploration of the interactive possibilities that Makie offers.
 

@@ -1,3 +1,12 @@
+"""
+A Smith Chart Axis which can be plotted into.
+
+**Constructors**
+
+```julia
+SmithAxis(fig_or_scene; kwargs...)
+```
+"""
 Makie.@Block SmithAxis <: Makie.AbstractAxis begin
 
 scene::Scene

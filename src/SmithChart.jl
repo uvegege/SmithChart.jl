@@ -1,7 +1,7 @@
 module SmithChart
 
 using Makie
-using Makie: parent_scene, shift_project, update_tooltip_alignment!, position2string
+using Makie: parent_scene, shift_project, update_tooltip_alignment!, position2string, make_block_docstring
 using Makie.GeometryBasics: Polygon
 using Makie: DragPan, ScrollZoom, LimitReset
 using Makie.GeometryBasics: LineString

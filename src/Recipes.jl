@@ -32,7 +32,7 @@ fig
 @recipe SmithPlot (z, ) begin
     color=:teal
     colormap=:viridis
-    line_width=2.8
+    linewidth=2.8
     linestyle=:solid
     label=nothing
     reflection=false
@@ -173,7 +173,7 @@ end
 function Makie.plot!(sp::SmithPlot)
     z = sp[1]
     color = sp[:color]
-    line_width = sp[:line_width]
+    line_width = sp[:linewidth]
     linestyle = sp[:linestyle]
     label = sp[:label]
     reflection = sp[:reflection]

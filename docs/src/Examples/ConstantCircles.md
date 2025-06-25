@@ -25,7 +25,7 @@ nf2 = NFCircle(F2dB, Fmin, Γopt, 20.0, 50.0, 361)
 nf2_5 = NFCircle(F2_5dB, Fmin, Γopt, 20.0, 50.0, 361)
 nf3 = NFCircle(F3dB, Fmin, Γopt, 20.0, 50.0, 361)
 
-smithscatter!(sc, [Γopt], reflection = true, color = :blue, linewidth = 1.9)
+smithscatter!(sc, [Γopt], reflection = true, color = :blue)
 text!(sc, "Γopt", position = Point2f(real(Γopt)-0.07, imag(Γopt)),  offset  = (3, 3), color = :blue, font = :bold)
 text!(sc, "$NFmin dB", position = Point2f(real(Γopt), imag(Γopt)),  offset  = (-11, -16), color = :blue, font = :bold)
 
@@ -66,7 +66,7 @@ c2 = CGCircle(g2, S11, 361)
 c3 = CGCircle(g3, S11, 361)
 c4 = CGCircle(g4, S11, 361)
 
-smithscatter!(sc, [conj(S11)], reflection = true, color = :blue, linewidth = 1.9)
+smithscatter!(sc, [conj(S11)], reflection = true, color = :blue)
 text!(sc, "S11*", position = Point2f(real(S11), -imag(S11)),  
     offset  = (11, 11), color = :blue, font = :bold, fontsize = 11)
 

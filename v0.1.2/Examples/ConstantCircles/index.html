@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Stability, Gain and Noise Circles · SmithChart.jl</title><meta name="title" content="Stability, Gain and Noise Circles · SmithChart.jl"/><meta property="og:title" content="Stability, Gain and Noise Circles · SmithChart.jl"/><meta property="twitter:title" content="Stability, Gain and Noise Circles · SmithChart.jl"/><meta name="description" content="Documentation for SmithChart.jl."/><meta property="og:description" content="Documentation for SmithChart.jl."/><meta property="twitter:description" content="Documentation for SmithChart.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SmithChart.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">SmithChart.jl</a></li><li><a class="tocitem" href="../../SmithAxisBlock/">SmithAxis Block</a></li><li><a class="tocitem" href="../../api_reference/">Public Documentation</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../ChartTypes/">Chart type and grid colors</a></li><li><a class="tocitem" href="../TickPositions/">Change tick positions</a></li><li><a class="tocitem" href="../MakieIntegration/">Integration with Makie</a></li><li><a class="tocitem" href="../Reflection/">Plot Reflection Coefficients</a></li><li><a class="tocitem" href="../InteractiveDataMarkers/">Interactive Data Markers</a></li><li class="is-active"><a class="tocitem" href>Stability, Gain and Noise Circles</a><ul class="internal"><li><a class="tocitem" href="#Constant-Gain-Circles"><span>Constant Gain Circles</span></a></li><li><a class="tocitem" href="#Constant-Noise-Circles"><span>Constant Noise Circles</span></a></li><li><a class="tocitem" href="#Stability-Circles"><span>Stability Circles</span></a></li></ul></li><li><a class="tocitem" href="../VisualDetails/">Visual Details</a></li><li><a class="tocitem" href="../DynamicUpdate/">Dynamic Annotation Update</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Stability, Gain and Noise Circles</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Stability, Gain and Noise Circles</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/uvegege/SmithChart.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/uvegege/SmithChart.jl/blob/main/docs/src/Examples/ConstantCircles.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Stability,-Gain-and-Noise-Circles"><a class="docs-heading-anchor" href="#Stability,-Gain-and-Noise-Circles">Stability, Gain and Noise Circles</a><a id="Stability,-Gain-and-Noise-Circles-1"></a><a class="docs-heading-anchor-permalink" href="#Stability,-Gain-and-Noise-Circles" title="Permalink"></a></h1><p>SmithChart.jl allows visualization of constant gain circles, constant noise circles, and stability regions, essential for amplifier design and stability analysis. These features can be useful for tasks such as designing low-noise amplifiers (LNAs), power amplifiers, and ensuring the stability of circuits over a range of frequencies and impedances.</p><h2 id="Constant-Gain-Circles"><a class="docs-heading-anchor" href="#Constant-Gain-Circles">Constant Gain Circles</a><a id="Constant-Gain-Circles-1"></a><a class="docs-heading-anchor-permalink" href="#Constant-Gain-Circles" title="Permalink"></a></h2><p>The example used to demonstrate <code>CGCircle</code> is based on the design found in <a href="https://www.allaboutcircuits.com/technical-articles/designing-a-unilateral-rf-amplifier-for-a-specified-gain/">this article on designing a unilateral RF amplifier for a specified gain</a>, where a detailed explanation can be found.</p><pre><code class="language-julia hljs">using CairoMakie
+using SmithChart
+
+f = Figure()
+sc = SmithAxis(f[1,1], cutgrid = true, title = &quot;Constant Gs Circles&quot;)
+
+NF_to_F(nf) = 10.0^(nf/10.0)
+Γopt = 0.5 * cis(130 * pi / 180)
+NFmin = 1.6 # dB
+Fmin = NF_to_F(NFmin)
+F2dB = NF_to_F(2.0)
+F2_5dB = NF_to_F(2.5)
+F3dB = NF_to_F(3.0)
+nf2 = NFCircle(F2dB, Fmin, Γopt, 20.0, 50.0, 361)
+nf2_5 = NFCircle(F2_5dB, Fmin, Γopt, 20.0, 50.0, 361)
+nf3 = NFCircle(F3dB, Fmin, Γopt, 20.0, 50.0, 361)
+
+smithscatter!(sc, [Γopt], reflection = true, color = :blue)
+text!(sc, &quot;Γopt&quot;, position = Point2f(real(Γopt)-0.07, imag(Γopt)),  offset  = (3, 3), color = :blue, font = :bold)
+text!(sc, &quot;$NFmin dB&quot;, position = Point2f(real(Γopt), imag(Γopt)),  offset  = (-11, -16), color = :blue, font = :bold)
+
+lines!(sc, nf2, color = :green, linewidth = 1.9)
+text!(sc, &quot;2.0 dB&quot;, position = nf2[45],  offset  = (2, -6), color = :green, font = :bold)
+
+lines!(sc, nf2_5, color = :purple, linewidth = 1.9)
+text!(sc, &quot;2.5 dB&quot;, position = nf2_5[120],  offset  = (-35, -2), color = :purple, font = :bold)
+
+lines!(sc, nf3, color = :orange, linewidth = 1.9)
+text!(sc, &quot;3.0 dB&quot;, position = nf3[260],  offset  = (2, 2), color = :orange, font = :bold)
+f</code></pre><img src="6a6b45fd.png" alt="Example block output"/><h2 id="Constant-Noise-Circles"><a class="docs-heading-anchor" href="#Constant-Noise-Circles">Constant Noise Circles</a><a id="Constant-Noise-Circles-1"></a><a class="docs-heading-anchor-permalink" href="#Constant-Noise-Circles" title="Permalink"></a></h2><p>The example for <code>NFCircle</code> is taken from <a href="https://www.allaboutcircuits.com/technical-articles/learn-about-designing-unilateral-low-noise-amplifiers/">this article on designing unilateral low-noise amplifiers</a>, which provides a thorough explanation.</p><pre><code class="language-julia hljs">using CairoMakie
+using SmithChart
+
+f = Figure()
+sc = SmithAxis(f[1,1], cutgrid = true, title = &quot;Constant NF Circles&quot;)
+
+S11 = 0.533 * cis(176.6 / 180 * π)
+S22 = 0.604 * cis(-58.0 / 180 * π)
+Go = abs2(S11)
+Gs_max = 1 / (1 - abs2(S11))
+gain(dB) = 10.0^(dB/10.0)
+
+g1 = gain(0.0) / Gs_max
+g2 = gain(0.5) / Gs_max
+g3 = gain(1.0) / Gs_max
+g4 = gain(1.4) / Gs_max
+
+c1 = CGCircle(g1, S11, 361)
+c2 = CGCircle(g2, S11, 361)
+c3 = CGCircle(g3, S11, 361)
+c4 = CGCircle(g4, S11, 361)
+
+smithscatter!(sc, [conj(S11)], reflection = true, color = :blue)
+text!(sc, &quot;S11*&quot;, position = Point2f(real(S11), -imag(S11)),
+    offset  = (11, 11), color = :blue, font = :bold, fontsize = 11)
+
+poly!(sc, c1, color = (:green, 0.1), strokecolor = :green, strokewidth = 1.9)
+text!(sc, &quot;0.0 dB&quot;, position = c1[125],  offset  = (17, -4), color = :green, font = :bold)
+
+lines!(sc, c2, color = :red, linewidth = 1.9)
+text!(sc, &quot;0.5 dB&quot;, position = c2[110],  offset  = (-39, -1), color = :red, font = :bold)
+
+lines!(sc, c3, color = :magenta, linewidth = 1.9)
+text!(sc, &quot;1.0 dB&quot;, position = c3[260],  offset  = (2, 0), color = :magenta, font = :bold)
+
+lines!(sc, c4, color = :purple, linewidth = 1.9)
+text!(sc, &quot;1.4 dB&quot;, position = c3[45],  offset  = (2, -5), color = :purple, font = :bold)
+f</code></pre><img src="aed70945.png" alt="Example block output"/><h2 id="Stability-Circles"><a class="docs-heading-anchor" href="#Stability-Circles">Stability Circles</a><a id="Stability-Circles-1"></a><a class="docs-heading-anchor-permalink" href="#Stability-Circles" title="Permalink"></a></h2><p>The example illustrating <code>StabilityCircle</code> is based on <a href="https://www.allaboutcircuits.com/technical-articles/learn-about-unconditional-stability-and-potential-instability-in-rf-amplifier-design/">this article about unconditional stability and potential instability in RF amplifier design</a>, which explains the theory in detail.</p><pre><code class="language-julia hljs">using CairoMakie
+using SmithChart
+
+f = Figure(size = (1000, 500))
+Label(f[0, 1:2] , &quot;Stable Regions&quot;, fontsize = 24, font = :bold)
+S11, S12, S21, S22 =  [0.438868-0.778865im 1.4+0.2im; 0.1+0.43im  0.692125-0.361834im]
+A =  StabilityCircle(S11, S12, S21, S22, :source, 361; stable = false)
+B =  StabilityCircle(S11, S12, S21, S22, :source, 361; stable = true)
+
+ax = SmithAxis(f[1,1], subtitle = &quot;StabilityCircle(... ; stable = false)&quot;)
+region = poly!(ax, A, strokecolor = :black, strokewidth = 1.2, color = Pattern(&#39;x&#39;, linecolor = :red, width = 1.3, background_color = (:red, 0.1)))
+translate!(region, (0, 0, -2))
+text!(ax, &quot;Unstable Input&quot;, position = Point2f(-0.65, -0.5), font = :bold, color = :red, fontsize = 15)
+B =  StabilityCircle(S11, S12, S21, S22, :source, 361; stable = true);
+ax = SmithAxis(f[1,2], subtitle = &quot;StabilityCircle(... ; stable = true)&quot;)
+region = poly!(ax, B, strokecolor = :black, strokewidth = 1.2, color = Pattern(&#39;\\&#39;, linecolor = :blue, width = 1.3, background_color = (:blue, 0.1)))
+translate!(region, (0, 0, -2))
+text!(ax, &quot;Stable Input&quot;, position = Point2f(-0.1, 0.15), font = :bold, color = :blue, fontsize = 15)
+f</code></pre><img src="dfd7e586.png" alt="Example block output"/><pre><code class="language-julia hljs">using CairoMakie
+using SmithChart
+
+f = Figure()
+S11, S12, S21, S22 = [ 0.0967927-0.604297im  0.0255292+0.0394621im ; -8.4396+11.0786im    0.552226-0.425271im]
+A =  StabilityCircle(S11, S12, S21, S22, :source, 361; stable = true);
+B =  StabilityCircle(S11, S12, S21, S22, :load, 361; stable = true);
+ax = SmithAxis(f[1,1], title = &quot;Input and Output stability regions&quot;)
+color1 = Pattern(&#39;/&#39;, linecolor = :blue, width = 1.3, background_color  = :transparent)
+color2 = Pattern(&#39;\\&#39;, linecolor = :green, width = 1.3, background_color  = :transparent)
+region = poly!(ax, A, strokecolor = :black, strokewidth = 1.2, color = color1)
+translate!(region, (0, 0, -2))
+region = poly!(ax, B, strokecolor = :black, strokewidth = 1.2, color = color2)
+translate!(region, (0, 0, -2))
+text!(ax, &quot;Stable Input&quot;, position = Point2f(-0.85, 0.2), font = :bold, color = :blue, rotation = 25*pi/180, fontsize = 12)
+text!(ax, &quot;Stable Output&quot;, position = Point2f(0.3, 0.5), font = :bold, color = :green, rotation = -18*pi/180, fontsize = 12)
+f</code></pre><img src="4d080d4c.png" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../InteractiveDataMarkers/">« Interactive Data Markers</a><a class="docs-footer-nextpage" href="../VisualDetails/">Visual Details »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.13.0 on <span class="colophon-date" title="Wednesday 25 June 2025 20:50">Wednesday 25 June 2025</span>. Using Julia version 1.10.9.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

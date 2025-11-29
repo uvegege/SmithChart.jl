@@ -346,7 +346,7 @@ function datamarkers(ax::SmithAxis, gp::GridPosition, markerdict = Dict{Int, Com
 
     dragactive = Observable(false)
     temp_plot_id = Observable(1)
-    # Maybe i shold not check de next and previous one and go directly to the closest one
+    # Maybe i shold not check the next and previous one and go directly to the closest one
     # Register interaction related to drag
     register_interaction!(ax, :leftdragtooltip) do event::MouseEvent, ax
 

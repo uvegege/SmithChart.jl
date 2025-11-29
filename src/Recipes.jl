@@ -5,11 +5,6 @@ Plot lines on the Smith Chart.
 
 ## Valid Keywords:
 
-- `color`  sets the color of the marker. Read `? scatter`.
-- `colormap = :viridis` sets the colormap that is sampled for numeric colors. 
-- `linestyle = :rect` sets the pattern of the line e.g. :solid, :dot, :dashdot.
-- `line_width = 2.8` sets the width of the line in pixel units.
-- `label = nothing`
 - `reflection = false`: Specifies whether it is a normalized impedance or a reflection coefficient.
 - `freq = Float64[]` Array of frequencies associated with each represented value. Mainly used by `DataInspector`.
 
@@ -30,16 +25,14 @@ fig
 
 """
 @recipe SmithPlot (z, ) begin
-    color=:teal
-    colormap=:viridis
-    linewidth=2.8
-    linestyle=:solid
-    label=nothing
+    "Specifies whether it is a normalized impedance or a reflection coefficient."
     reflection=false
+    " Array of frequencies associated with each represented value. Mainly used by `DataInspector`"
     freq = Float64[]
-    cycle=[:color]
+    Makie.documented_attributes(Makie.Lines)...
 end
 
+argument_names(::Type{<: SmithPlot}, N) = (:z, )
 Makie.preferred_axis_type(plot::SmithPlot) = SmithAxis 
 
 """
@@ -49,11 +42,6 @@ Scatter points on the Smith Chart.
 
 ## Valid Keywords:
 
-- `color`  sets the color of the marker. Read `? scatter`.
-- `colormap = :viridis` sets the colormap that is sampled for numeric colors. 
-- `marker = :rect` sets the scatter marker.
-- `markersize = 9` sets the size of the marker.
-- `label = nothing`
 - `reflection = false`: Specifies whether it is a normalized impedance or a reflection coefficient.
 - `freq = Float64[]` Array of frequencies associated with each represented value. Mainly used Mainly used by `DataInspector`.
 
@@ -70,25 +58,20 @@ smithscatter!(sc, r; color = :dodgerblue, linewidth = 2)
 fig
 ```
 
-
 """
 @recipe SmithScatter (z, ) begin 
-        color=:teal
-        colormap=:viridis
-        marker=:circle
-        markersize=9
-        label=""
-        reflection=false
-        freq = Float64[]
-        cycle=[:color]
+    "Specifies whether it is a normalized impedance or a reflection coefficient."
+    reflection=false
+    " Array of frequencies associated with each represented value. Mainly used by `DataInspector`"
+    freq = Float64[]
+    Makie.documented_attributes(Makie.Scatter)...
 end
 
+argument_names(::Type{<: SmithScatter}, N) = (:z, )
 Makie.preferred_axis_type(plot::SmithScatter) = SmithAxis 
 
 
 function Makie.show_data(inspector::DataInspector, plot::SmithPlot, idx, ::Lines)
-    # Get the tooltip plot
-    tt = inspector.plot
     a = plot.attributes
     zi = plot[1][][idx]
 
@@ -97,18 +80,14 @@ function Makie.show_data(inspector::DataInspector, plot::SmithPlot, idx, ::Lines
     else
         pos = Point2f(real(zi), imag(zi))
     end
-    # Get the scene BarPlot lives in
-    scene = Makie.parent_scene(plot)
 
-    # project to screen space and shift it to be correct on the root scene
+    scene = Makie.parent_scene(plot)
     proj_pos = Makie.shift_project(scene, to_ndim(Point3f, pos, 0))
-    # anchor the tooltip at the projected position
-    Makie.update_tooltip_alignment!(inspector, proj_pos)
 
     if imag(zi) < 0
-        txt = @sprintf("z=%.3f-j%.3f", real(zi), abs(imag(zi)))
+        text = @sprintf("z=%.3f-j%.3f", real(zi), abs(imag(zi)))
     else
-        txt = @sprintf("z=%.3f+j%.3f", real(zi), abs(imag(zi)))
+        text = @sprintf("z=%.3f+j%.3f", real(zi), abs(imag(zi)))
     end
 
     if !isempty(a.freq[])
@@ -118,20 +97,14 @@ function Makie.show_data(inspector::DataInspector, plot::SmithPlot, idx, ::Lines
                 f < 1.0e9 ? @sprintf("%.3f MHz", f/1.0e6) :
                 f < 1.0e12 ? @sprintf("%.3f GHz", f/1.0e9) :
                 @sprintf("%.3f THz", f/1.0e12)
-        txt *= "\n f = " * ftext
+        text *= "\n f = " * ftext
     end
-
-    tt.text[] = txt
-    # Show the tooltip
-    tt.visible[] = true
-    # return true to indicate that we have updated the tooltip
+    Makie.update_tooltip_alignment!(inspector, proj_pos; text)
     return true
 end
 
 
 function Makie.show_data(inspector::DataInspector, plot::SmithScatter, idx, ::Scatter)
-    # Get the tooltip plot
-    tt = inspector.plot
     a = plot.attributes
     zi = plot[1][][idx]
     if a.reflection[] == false
@@ -139,18 +112,15 @@ function Makie.show_data(inspector::DataInspector, plot::SmithScatter, idx, ::Sc
     else
         pos = Point2f(real(zi), imag(zi))
     end
-    # Get the scene BarPlot lives in
-    scene = Makie.parent_scene(plot)
 
-    # project to screen space and shift it to be correct on the root scene
+    scene = Makie.parent_scene(plot)
     proj_pos = Makie.shift_project(scene, to_ndim(Point3f, pos, 0))
-    # anchor the tooltip at the projected position
-    Makie.update_tooltip_alignment!(inspector, proj_pos)
+
 
     if imag(zi) < 0
-        txt = @sprintf("z=%.3f-j%.3f", real(zi), abs(imag(zi)))
+        text = @sprintf("z=%.3f-j%.3f", real(zi), abs(imag(zi)))
     else
-        txt = @sprintf("z=%.3f+j%.3f", real(zi), abs(imag(zi)))
+        text = @sprintf("z=%.3f+j%.3f", real(zi), abs(imag(zi)))
     end
 
     if !isempty(a.freq[])
@@ -160,81 +130,53 @@ function Makie.show_data(inspector::DataInspector, plot::SmithScatter, idx, ::Sc
                 f < 1.0e9 ? @sprintf("%.3f MHz", f/1.0e6) :
                 f < 1.0e12 ? @sprintf("%.3f GHz", f/1.0e9) :
                 @sprintf("%.3f THz", f/1.0e12)
-        txt *= "\n f = " * ftext
+        text *= "\n f = " * ftext
     end
 
-    tt.text[] = txt
-    # Show the tooltip
-    tt.visible[] = true
-    # return true to indicate that we have updated the tooltip
+    Makie.update_tooltip_alignment!(inspector, proj_pos; text)
+
     return true
 end
 
 function Makie.plot!(sp::SmithPlot)
-    z = sp[1]
-    color = sp[:color]
-    line_width = sp[:linewidth]
-    linestyle = sp[:linestyle]
-    label = sp[:label]
-    reflection = sp[:reflection]
-    colormap = sp[:colormap]
-
-    z_data = Observable(Point2f[])
-    function update_zdata(z)
-        empty!(z_data[])
+    output_nodes = :lines
+    map!(sp.attributes, [:z, :reflection], output_nodes) do z, r
+        lines = Point2f[]
         if !isempty(z)
             for zi in z
-                if reflection[] == false
-                    push!(z_data[], smith_transform(zi))
+                if r == false
+                    push!(lines, smith_transform(zi))
                 else
-                    push!(z_data[], Point2f(real(zi), imag(zi)))
+                    push!(lines, Point2f(real(zi), imag(zi)))
                 end
             end
         else
-            push!(z_data[], Point2f(NaN))
-            push!(z_data[], Point2f(NaN))
+            append!(lines, [Point2f(NaN), Point2f(NaN)])
         end
-        notify(z_data)
+        return lines
     end
-    on(update_zdata, z)
-    update_zdata(z[])
-
-    lines!(sp, z_data, color=color, colormap=colormap, linewidth=line_width, linestyle=linestyle, label=label)
+    lines!(sp, Attributes(sp), sp.lines)
     return sp
 end
 
 
 function Makie.plot!(sc::SmithScatter)
-    @show sc.attributes
-    z = sc[1]
-    color = sc[:color]
-    markersize = sc[:markersize]
-    marker = sc[:marker]
-    label = sc[:label]
-    reflection = sc[:reflection]
-    colormap = sc[:colormap]
-
-    z_data = Observable(Point2f[])
-    function update_zdata(z)
-        empty!(z_data[])
+    output_nodes = :scatter
+    map!(sc.attributes, [:z, :reflection], output_nodes) do z, r
+        scatter = Point2f[]
         if !isempty(z)
             for zi in z
-                if reflection[] == false
-                    push!(z_data[], smith_transform(zi))
+                if r == false
+                    push!(scatter, smith_transform(zi))
                 else
-                    push!(z_data[], Point2f(real(zi), imag(zi)))
+                    push!(scatter, Point2f(real(zi), imag(zi)))
                 end
             end
         else
-            push!(z_data[], Point2f(NaN))
-            push!(z_data[], Point2f(NaN))
+            append!(scatter, [Point2f(NaN), Point2f(NaN)])
         end
-        notify(z_data)
+        return scatter
     end
-    on(update_zdata, z)
-    update_zdata(z[])
-
-    scatter!(sc, z_data, color=color, colormap=colormap, markersize=markersize, marker=marker, label=label)
-
+    scatter!(sc, Attributes(sc), sc.scatter)
     return sc
 end

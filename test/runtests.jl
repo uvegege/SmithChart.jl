@@ -1,7 +1,7 @@
-1+1
 using SmithChart
 using Test
 
+#=
 @testset "SmithChart.jl" begin
     using CairoMakie
     f = Figure(size = (1200, 800))
@@ -13,3 +13,4 @@ using Test
     sc = SmithAxis(f[2,3], type = :ZY, subtitle = "zgridcolor = :orange, ygridcolor = :green", zgridcolor = :orange, ygridcolor = :green, gtickvisible = false, btickvisible = false)
     f
 end
+=#

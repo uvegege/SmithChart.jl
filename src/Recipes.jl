@@ -29,7 +29,7 @@ fig
     reflection=false
     " Array of frequencies associated with each represented value. Mainly used by `DataInspector`"
     freq = Float64[]
-    #Makie.documented_attributes(Makie.Lines)...
+    Makie.documented_attributes(Lines)...
 end
 
 argument_names(::Type{<: SmithPlot}, N) = (:z, )
@@ -64,7 +64,7 @@ fig
     reflection=false
     " Array of frequencies associated with each represented value. Mainly used by `DataInspector`"
     freq = Float64[]
-    #Makie.documented_attributes(Makie.Scatter)...
+    Makie.documented_attributes(Scatter)...
 end
 
 argument_names(::Type{<: SmithScatter}, N) = (:z, )

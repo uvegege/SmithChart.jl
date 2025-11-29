@@ -1,3 +1,101 @@
+function smithplot_attributes()
+    Makie.@DocumentedAttributes begin
+        "The color of the line."
+        color = @inherit linecolor
+        "Sets the width of the line in screen units"
+        linewidth = @inherit linewidth
+        """
+        Sets the dash pattern of the line. Options are `:solid` (equivalent to `nothing`), `:dot`, `:dash`, `:dashdot` and `:dashdotdot`.
+        These can also be given in a tuple with a gap style modifier, either `:normal`, `:dense` or `:loose`.
+        For example, `(:dot, :loose)` or `(:dashdot, :dense)`.
+
+        """
+        linestyle = nothing
+        """
+        Sets the type of line cap used. Options are `:butt` (flat without extrusion),
+        `:square` (flat with half a linewidth extrusion) or `:round`.
+        """
+        linecap = @inherit linecap
+        """
+        Controls the rendering at corners. Options are `:miter` for sharp corners,
+        `:bevel` for "cut off" corners, and `:round` for rounded corners. If the corner angle
+        is below `miter_limit`, `:miter` is equivalent to `:bevel` to avoid long spikes.
+        """
+        joinstyle = @inherit joinstyle
+        "Sets the minimum inner join angle below which miter joins truncate. See also `Makie.miter_distance_to_angle`."
+        miter_limit = @inherit miter_limit
+        """
+        Sets which attributes to cycle when creating multiple plots. The values to
+        cycle through are defined by the parent Theme. Multiple cycled attributes can
+        be set by passing a vector. Elements can
+        - directly refer to a cycled attribute, e.g. `:color`
+        - map a cycled attribute to a palette attribute, e.g. `:linecolor => :color`
+        - map multiple cycled attributes to a palette attribute, e.g. `[:linecolor, :markercolor] => :color`
+        """
+        cycle = [:color]
+        mixin_generic_plot_attributes()...
+        mixin_colormap_attributes()...
+        fxaa = false
+    end
+end
+
+function smithscatter_attributes()
+    Makie.@DocumentedAttributes begin
+        "Sets the color of the marker. If no color is set, multiple calls to `scatter!` will cycle through the axis color palette."
+        color = @inherit markercolor
+        "Sets the scatter marker."
+        marker = @inherit marker
+        """
+        Sets the size of the marker by scaling it relative to its base size which can differ for each marker.
+        A `Real` scales x and y dimensions by the same amount.
+        A `Vec` or `Tuple` with two elements scales x and y separately.
+        An array of either scales each marker separately.
+        Humans perceive the area of a marker as its size which grows quadratically with `markersize`,
+        so multiplying `markersize` by 2 results in a marker that is 4 times as large, visually.
+        """
+        markersize = @inherit markersize
+        "Sets the color of the outline around a marker."
+        strokecolor = @inherit markerstrokecolor
+        "Sets the width of the outline around a marker."
+        strokewidth = @inherit markerstrokewidth
+        "Sets the color of the glow effect around the marker."
+        glowcolor = (:black, 0.0)
+        "Sets the size of a glow effect around the marker."
+        glowwidth = 0.0
+
+        "Sets the rotation of the marker. A `Billboard` rotation is always around the depth axis."
+        rotation = Billboard()
+        "The offset of the marker from the given position in `markerspace` units. An offset of 0 corresponds to a centered marker."
+        marker_offset = Vec3f(0)
+        "Controls whether the model matrix (without translation) applies to the marker itself, rather than just the positions. (If this is true, `scale!` and `rotate!` will affect the marker."
+        transform_marker = false
+        "Sets the font used for character markers. Can be a `String` specifying the (partial) name of a font or the file path of a font file"
+        font = @inherit markerfont
+        "Optional distancefield used for e.g. font and bezier path rendering. Will get set automatically."
+        distancefield = nothing
+        """
+        Sets the font to be used for character markers
+        """
+        font = "default"
+        "Sets the space in which `markersize` is given. See `Makie.spaces()` for possible inputs"
+        markerspace = :pixel
+        """
+        Sets which attributes to cycle when creating multiple plots. The values to
+        cycle through are defined by the parent Theme. Multiple cycled attributes can
+        be set by passing a vector. Elements can
+        - directly refer to a cycled attribute, e.g. `:color`
+        - map a cycled attribute to a palette attribute, e.g. `:linecolor => :color`
+        - map multiple cycled attributes to a palette attribute, e.g. `[:linecolor, :markercolor] => :color`
+        """
+        cycle = [:color]
+        "Enables depth-sorting of markers which can improve border artifacts. Currently supported in GLMakie only."
+        depthsorting = false
+        mixin_generic_plot_attributes()...
+        mixin_colormap_attributes()...
+        fxaa = false
+    end
+end
+
 """
     smithplot(z; kwargs...)
 
@@ -24,16 +122,16 @@ fig
 ```
 
 """
-@recipe SmithPlot (z, ) begin
+@recipe SmithPlot (z,) begin
     "Specifies whether it is a normalized impedance or a reflection coefficient."
-    reflection=false
+    reflection = false
     " Array of frequencies associated with each represented value. Mainly used by `DataInspector`"
     freq = Float64[]
-    Makie.documented_attributes(Lines)...
+    smithplot_attributes()...
 end
 
-argument_names(::Type{<: SmithPlot}, N) = (:z, )
-Makie.preferred_axis_type(plot::SmithPlot) = SmithAxis 
+argument_names(::Type{<:SmithPlot}, N) = (:z,)
+Makie.preferred_axis_type(plot::SmithPlot) = SmithAxis
 
 """
     smithscatter(z; kwargs...)
@@ -59,16 +157,16 @@ fig
 ```
 
 """
-@recipe SmithScatter (z, ) begin 
+@recipe SmithScatter (z,) begin
     "Specifies whether it is a normalized impedance or a reflection coefficient."
-    reflection=false
+    reflection = false
     " Array of frequencies associated with each represented value. Mainly used by `DataInspector`"
     freq = Float64[]
-    Makie.documented_attributes(Scatter)...
+    smithscatter_attributes()...
 end
 
-argument_names(::Type{<: SmithScatter}, N) = (:z, )
-Makie.preferred_axis_type(plot::SmithScatter) = SmithAxis 
+argument_names(::Type{<:SmithScatter}, N) = (:z,)
+Makie.preferred_axis_type(plot::SmithScatter) = SmithAxis
 
 
 function Makie.show_data(inspector::DataInspector, plot::SmithPlot, idx, ::Lines)
@@ -93,10 +191,10 @@ function Makie.show_data(inspector::DataInspector, plot::SmithPlot, idx, ::Lines
     if !isempty(a.freq[])
         f = a.freq[][idx]
         ftext = f < 1.0e3 ? @sprintf("%.3f Hz", f) :
-                f < 1.0e6 ? @sprintf("%.3f kHz", f/1.0e3) :
-                f < 1.0e9 ? @sprintf("%.3f MHz", f/1.0e6) :
-                f < 1.0e12 ? @sprintf("%.3f GHz", f/1.0e9) :
-                @sprintf("%.3f THz", f/1.0e12)
+                f < 1.0e6 ? @sprintf("%.3f kHz", f / 1.0e3) :
+                f < 1.0e9 ? @sprintf("%.3f MHz", f / 1.0e6) :
+                f < 1.0e12 ? @sprintf("%.3f GHz", f / 1.0e9) :
+                @sprintf("%.3f THz", f / 1.0e12)
         text *= "\n f = " * ftext
     end
     Makie.update_tooltip_alignment!(inspector, proj_pos; text)
@@ -126,10 +224,10 @@ function Makie.show_data(inspector::DataInspector, plot::SmithScatter, idx, ::Sc
     if !isempty(a.freq[])
         f = a.freq[][idx]
         ftext = f < 1.0e3 ? @sprintf("%.3f Hz", f) :
-                f < 1.0e6 ? @sprintf("%.3f kHz", f/1.0e3) :
-                f < 1.0e9 ? @sprintf("%.3f MHz", f/1.0e6) :
-                f < 1.0e12 ? @sprintf("%.3f GHz", f/1.0e9) :
-                @sprintf("%.3f THz", f/1.0e12)
+                f < 1.0e6 ? @sprintf("%.3f kHz", f / 1.0e3) :
+                f < 1.0e9 ? @sprintf("%.3f MHz", f / 1.0e6) :
+                f < 1.0e12 ? @sprintf("%.3f GHz", f / 1.0e9) :
+                @sprintf("%.3f THz", f / 1.0e12)
         text *= "\n f = " * ftext
     end
 

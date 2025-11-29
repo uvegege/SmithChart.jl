@@ -8,7 +8,7 @@ Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
-Makie = "0.24.1"
+Makie = "0.24.7"
 julia = "1.10"
 
 [extras]
